@@ -1,0 +1,18 @@
+{
+  "name": "decoforge-baguio-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API and static server for the Decoforge Baguio workshop site",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/*.test.js",
+    "reset": "rm -rf data && node -e \"console.log('data/ cleared; it reseeds on next start')\""
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "license": "MIT"
+}

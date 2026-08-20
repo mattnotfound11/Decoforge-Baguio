@@ -1,0 +1,53 @@
+/* Design tokens. Light is the base; dark redefines only the colors. */
+
+:root {
+  /* surfaces and ink */
+  --bg: #f6f3ee;
+  --surface: #fffdfa;
+  --surface-2: #efeae1;
+  --ink: #211d18;
+  --muted: #6b6257;
+  --line: #ddd5c8;
+
+  /* brand */
+  --pine: #2f4a3f;
+  --pine-soft: #e3ebe5;
+  --on-pine: #fdfcf9;
+  --ember: #a85d1c;
+
+  /* status */
+  --danger: #a3301f;
+  --danger-soft: #fbeae7;
+  --ok: #2f6d4f;
+
+  /* form */
+  --shadow: 0 1px 2px rgba(33, 29, 24, .06), 0 8px 24px rgba(33, 29, 24, .07);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --maxw: 1180px;
+
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14120f;
+    --surface: #1d1a16;
+    --surface-2: #26221c;
+    --ink: #f1ece4;
+    --muted: #a89e90;
+    --line: #35302a;
+
+    --pine: #8ab39c;
+    --pine-soft: #1e2a24;
+    --on-pine: #10140f;
+    --ember: #d99a55;
+
+    --danger: #e58e7e;
+    --danger-soft: #2c1c19;
+    --ok: #7fc0a0;
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px rgba(0, 0, 0, .35);
+  }
+}

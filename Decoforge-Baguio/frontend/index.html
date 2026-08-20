@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Decoforge Baguio — Custom furniture and decor, made in the Cordilleras</title>
+  <meta name="description" content="Decoforge Baguio builds custom furniture, lighting, and decor from Benguet pine, narra, rattan, and handwoven textiles. Request a quote from the workshop." />
+
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/styles.css" />
+
+  <script type="module" src="./js/main.js"></script>
+</head>
+<body>
+
+  <a class="skip" href="#catalog">Skip to catalog</a>
+
+  <!-- ==================================================== header ==== -->
+  <header class="site">
+    <div class="wrap bar">
+      <a class="logo" href="#top">
+        <img src="./assets/favicon.svg" alt="" width="34" height="34" />
+        <span><b>Decoforge</b><span>Baguio</span></span>
+      </a>
+
+      <nav class="site" aria-label="Primary">
+        <a href="#catalog">Catalog</a>
+        <a href="#process">Process</a>
+        <a href="#workshop">Workshop</a>
+      </nav>
+
+      <button class="btn" id="openQuote" type="button" aria-haspopup="dialog" aria-controls="drawer">
+        Quote list <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ==================================================== hero ==== -->
+    <div class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow">Workshop on Marcos Highway &middot; Est. 2016</span>
+          <h1>Furniture built for <em>mountain houses</em>.</h1>
+          <p class="lede">
+            We design and fabricate custom furniture, lighting, and decor from Benguet pine,
+            narra, rattan, and handwoven Cordillera textiles &mdash; one workshop, no middlemen,
+            delivered anywhere in Luzon.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn" href="#catalog">Browse the catalog</a>
+            <button class="btn btn-ghost" id="heroQuote" type="button">Start a quote</button>
+          </div>
+
+          <div class="stats">
+            <div><strong>9 yrs</strong><span>in the same shop</span></div>
+            <div><strong>340+</strong><span>commissions delivered</span></div>
+            <div><strong>14&ndash;35</strong><span>days typical lead time</span></div>
+          </div>
+        </div>
+
+        <figure class="hero-art">
+          <figcaption>
+            Pine slabs conditioning in the drying shed &mdash; Baguio&rsquo;s humidity means
+            every board rests eight weeks before it is cut.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- ================================================= catalog ==== -->
+    <section id="catalog" class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>The catalog</h2>
+          <p>
+            Standing designs we build regularly. Every one can be resized, refinished, or
+            reworked in a different wood &mdash; add pieces to your quote list and tell us
+            what to change.
+          </p>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="chips" id="categoryChips" role="group" aria-label="Filter by category"></div>
+
+        <div class="field-inline">
+          <label class="sr-only" for="search">Search the catalog</label>
+          <input type="search" id="search" placeholder="Search wood, piece, room&hellip;" />
+
+          <label class="sr-only" for="sort">Sort results</label>
+          <select id="sort">
+            <option value="">Featured first</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="lead-time">Fastest lead time</option>
+            <option value="name">Name A&ndash;Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid" id="grid" aria-busy="true" aria-live="polite">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+      </div>
+    </section>
+
+    <!-- ================================================= process ==== -->
+    <section id="process" class="process">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>How a commission runs</h2>
+            <p>Four steps, roughly six weeks from first message to delivery.</p>
+          </div>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="n" aria-hidden="true">1</div>
+            <h3>Quote</h3>
+            <p>Send your list or a photo of the space. We reply within two business days with a costed drawing.</p>
+          </div>
+          <div class="step">
+            <div class="n" aria-hidden="true">2</div>
+            <h3>Sample</h3>
+            <p>You approve a finish sample and joinery detail in person or by courier before we cut stock.</p>
+          </div>
+          <div class="step">
+            <div class="n" aria-hidden="true">3</div>
+            <h3>Build</h3>
+            <p>Fabrication takes two to five weeks. You get progress photos at frame-up and at finishing.</p>
+          </div>
+          <div class="step">
+            <div class="n" aria-hidden="true">4</div>
+            <h3>Deliver</h3>
+            <p>Blanket-wrapped delivery and placement across Baguio and Benguet; freight elsewhere in Luzon.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================ workshop ==== -->
+    <section id="workshop" class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>The workshop</h2>
+          <p>
+            Decoforge is eleven people: four joiners, two finishers, a welder, two weavers,
+            and the two of us who draw. We buy lumber from salvage and storm-fall permits in
+            Benguet and Ifugao, and we publish the source of every board on the invoice. If a
+            piece fails on us within five years, we repair it at cost.
+          </p>
+        </div>
+        <button class="btn btn-ghost" id="workshopQuote" type="button">Ask about a commission</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================================================== footer ==== -->
+  <footer class="site">
+    <div class="wrap foot">
+      <div>
+        <p><strong>Decoforge Baguio</strong> &mdash; Km 4 Marcos Highway, Baguio City, Benguet 2600</p>
+        <p>Mon&ndash;Sat, 9:00&ndash;18:00 &middot; hello@decoforge.example &middot; (074) 442&ndash;0116</p>
+      </div>
+      <div class="foot-links">
+        <a href="#catalog">Catalog</a>
+        <a href="#process">Process</a>
+        <button class="linkish" id="adminOpen" type="button">Staff sign-in</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================== quote drawer ==== -->
+  <div class="scrim" id="scrim"></div>
+
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true"
+         aria-labelledby="drawerTitle" aria-hidden="true">
+    <div class="drawer-head">
+      <h2 id="drawerTitle">Your quote list</h2>
+      <button class="icon-btn" id="closeQuote" type="button" aria-label="Close quote list">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawerBody"></div>
+  </aside>
+
+  <!-- =============================================== staff dialog ==== -->
+  <dialog class="admin" id="adminDialog" aria-labelledby="adminTitle">
+    <div class="dialog-head">
+      <h2 id="adminTitle">Quote pipeline</h2>
+      <button class="icon-btn" id="adminClose" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div class="dialog-body" id="adminBody"></div>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+</body>
+</html>
