@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://decoforge-baguio.vercel.app/sitemap.xml
