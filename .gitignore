@@ -42,3 +42,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .gstack/
+
+# local AI tooling config — machine-specific absolute paths, not shareable
+.claude/settings.local.json
+.cursor/
+.grok/
+.impeccable/
