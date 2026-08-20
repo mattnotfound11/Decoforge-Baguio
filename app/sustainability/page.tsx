@@ -16,8 +16,8 @@ export default function SustainabilityPage() {
         {
           heading: "Reclaimed content",
           body: [
-            "Our WPC panels and decking are built on a core of roughly 60% reclaimed hardwood fibre, sourced as mill residue rather than from newly felled timber. The percentage is stated on every specification sheet, and it is a floor rather than an average.",
-            "Products carrying the Sustainable Core marker on this site meet that threshold. Products without it do not, and we would rather say so than blur the line.",
+            "Our WPC panels and decking use a wood-plastic composite core that includes reclaimed hardwood fibre. Exact content varies by production run — ask us for the current figure on a specific product and we will get it from the supplier.",
+            "Products carrying the Sustainable Core marker use a reclaimed-fibre core. Products without it do not, and we would rather say so than blur the line.",
           ],
         },
         {
@@ -31,7 +31,7 @@ export default function SustainabilityPage() {
           heading: "Longevity as the real measure",
           body: [
             "The most significant thing we can do is supply a surface that does not need replacing. Colour is run through the full thickness of our boards rather than printed on the face, so a scratch does not force a swap.",
-            "The five-year workmanship guarantee exists for the same reason: a repaired wall has a far smaller footprint than a replaced one.",
+            "We would always rather repair a wall than replace one, and we will tell you when a repair is the better call.",
           ],
         },
         {

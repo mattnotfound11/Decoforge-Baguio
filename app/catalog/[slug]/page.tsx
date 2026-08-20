@@ -7,7 +7,7 @@ import { MaterialArt } from "@/components/material-art";
 import { ProductGallery } from "@/components/product-gallery";
 import { StockBadge } from "@/components/stock-badge";
 import { categoryLabel, getMaterial, materials } from "@/lib/materials";
-import { formatPeso, formatUsd } from "@/lib/format";
+import { formatPeso, formatPesoRate, pesoPerSqft } from "@/lib/format";
 import { photo } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -103,12 +103,18 @@ export default async function MaterialPage({
                 <div className="flex flex-wrap items-baseline justify-between gap-3">
                   <span className="text-[15px] text-muted">Estimated Price</span>
                   <span className="text-[30px] font-extrabold tracking-[-0.02em]">
-                    {formatUsd(material.priceUsdSqft)}
-                    <span className="ml-1 text-[15px] font-medium text-muted">/ sq ft</span>
+                    {formatPeso(material.pricePhp)}
+                    <span className="ml-1 text-[15px] font-medium text-muted">
+                      / {material.unit}
+                    </span>
                   </span>
                 </div>
+
+                {/* Derived from the piece price, so the two can never disagree. */}
                 <p className="mt-1 text-right text-[14px] text-muted">
-                  {formatPeso(material.pricePhp)} per {material.unit} at the showroom
+                  {material.coverageSqft > 0
+                    ? `${formatPesoRate(pesoPerSqft(material.pricePhp, material.coverageSqft))} per sq ft · covers ${material.coverageSqft} sq ft`
+                    : "Priced per length — see the spec sheet"}
                 </p>
 
                 <p className="mt-5 text-[15px] leading-relaxed text-ink/75">{material.description}</p>

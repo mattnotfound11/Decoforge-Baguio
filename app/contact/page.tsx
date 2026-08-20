@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 
 /** Maps a material category onto the matching "Interested in" option. */
 const INTEREST_FOR = {
+  "uv-marble": "UV Marble Boards",
   "pvc-ceilings": "PVC Ceilings",
   "fluted-panels": "Fluted Panels",
   decking: "Decking",
@@ -73,10 +74,18 @@ export default async function ContactPage({
                       icon={<><rect x="2.5" y="4.5" width="15" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M3 6l7 5 7-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></>}
                     />
                     <ContactRow
-                      label="WhatsApp"
-                      value={site.whatsapp}
-                      href={site.whatsappHref}
-                      icon={<><rect x="2.5" y="3.5" width="15" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M7 17l3-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></>}
+                      label="Facebook"
+                      value={site.facebookHandle}
+                      href={site.facebook}
+                      external
+                      icon={<path d="M11.5 18v-6h2l.4-2.6h-2.4V7.7c0-.75.2-1.26 1.28-1.26H14V4.12A17 17 0 0012.02 4C10.06 4 8.7 5.2 8.7 7.4v2H6.5V12h2.2v6z" fill="currentColor" />}
+                    />
+                    <ContactRow
+                      label="Messenger"
+                      value="Chat with us"
+                      href={site.messenger}
+                      external
+                      icon={<><path d="M10 2.5c-4.2 0-7.5 3.08-7.5 7.24 0 2.37 1.08 4.48 2.77 5.86v2.9l2.53-1.39c.7.19 1.43.3 2.2.3 4.2 0 7.5-3.08 7.5-7.24S14.2 2.5 10 2.5z" stroke="currentColor" strokeWidth="1.4" fill="none" /><path d="M5.6 12.2l3.1-3.3 1.6 1.7 2.6-1.7-3.1 3.3-1.6-1.7z" fill="currentColor" /></>}
                     />
                   </ul>
                 </div>
@@ -155,11 +164,13 @@ function ContactRow({
   value,
   href,
   icon,
+  external = false,
 }: {
   label: string;
   value: string;
   href: string;
   icon: React.ReactNode;
+  external?: boolean;
 }) {
   return (
     <li className="flex gap-3.5">
@@ -168,7 +179,11 @@ function ContactRow({
       </svg>
       <div>
         <p className="text-[13px] text-white/50">{label}</p>
-        <a href={href} className="text-[16px] font-semibold transition hover:text-rust-2">
+        <a
+          href={href}
+          {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+          className="text-[16px] font-semibold transition hover:text-rust-2"
+        >
           {value}
         </a>
       </div>

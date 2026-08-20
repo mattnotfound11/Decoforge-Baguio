@@ -1,27 +1,38 @@
-/** Single source of truth for brand facts that appear in more than one place. */
+/**
+ * Brand facts, taken from the official Facebook page:
+ * https://www.facebook.com/people/Decoforge-Home-And-Aesthetics/61578740650682/
+ *
+ * Keep this file the single source of truth — the header, footer, contact page,
+ * booking emails, and spec sheets all read from it.
+ */
 
 export const site = {
   name: "Decoforge",
-  legalName: "Decoforge Architectural Surfaces",
-  tagline: "Crafting Baguio's finest interiors",
+  legalName: "Decoforge Home And Aesthetics",
+  tagline: "Elevate your space with affordable and premium home decor finishes",
   description:
-    "Decoforge supplies and installs premium PVC ceilings, fluted panels, and WPC decking across Baguio City and the Cordilleras.",
+    "Decoforge Home And Aesthetics supplies and installs affordable, premium home decor finishes in Baguio City — UV marble boards, PVC ceilings, fluted wall panels, and WPC decking.",
+  category: "Construction Company · Home Decor · Home Improvement",
 
-  phone: "+63 917 123 4567",
-  phoneHref: "tel:+639171234567",
-  email: "hello@decoforge.com",
-  whatsapp: "+63 917 123 4567",
-  whatsappHref: "https://wa.me/639171234567",
+  phone: "0963 271 2356",
+  phoneHref: "tel:+639632712356",
+  email: "decoforge.homeaesthetic@gmail.com",
+
+  facebook: "https://www.facebook.com/people/Decoforge-Home-And-Aesthetics/61578740650682/",
+  facebookHandle: "Decoforge Home And Aesthetics",
+  messenger: "https://m.me/61578740650682",
+  followers: "2.8K",
 
   showroom: {
-    line1: "123 Irisan Road, Baguio City",
-    line2: "Benguet, Philippines 2600",
-    mapHref: "https://maps.google.com/?q=Irisan+Road+Baguio+City",
+    line1: "Irisan, Baguio City",
+    line2: "Philippines, 2600",
+    mapHref: "https://maps.google.com/?q=Irisan,+Baguio+City,+Philippines",
   },
 
+  /** The Facebook page lists the business as always open. */
   hours: {
-    weekdays: "Mon – Sat: 9:00 AM – 6:00 PM",
-    weekend: "Sunday: Closed",
+    weekdays: "Open daily",
+    weekend: "Message us any time",
   },
 } as const;
 

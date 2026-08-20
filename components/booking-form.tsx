@@ -235,7 +235,7 @@ export function BookingForm({
       </button>
 
       <p className="mt-3 text-[13px] text-muted">
-        Mon–Sat, 9:00 AM – 6:00 PM. We never share your details.
+        Open daily. We never share your details.
       </p>
     </form>
   );

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { categoryLabel, getMaterial } from "@/lib/materials";
-import { formatPeso, formatUsd } from "@/lib/format";
+import { formatPeso, formatPesoRate, pesoPerSqft } from "@/lib/format";
 import { getStockSnapshot } from "@/lib/stock";
 import { site } from "@/lib/site";
 
@@ -31,7 +31,12 @@ ${"-".repeat(64)}
 PRICING
 ${"-".repeat(64)}
 Showroom price    ${formatPeso(material.pricePhp)} per ${material.unit}
-Export price      ${formatUsd(material.priceUsdSqft)} per sq ft
+Rate per sq ft    ${
+    material.coverageSqft > 0
+      ? `${formatPesoRate(pesoPerSqft(material.pricePhp, material.coverageSqft))} (covers ${material.coverageSqft} sq ft)`
+      : "n/a — priced per length"
+  }
+Currency          Philippine Peso (PHP)
 Lead time         ${material.leadTime}
 Availability      ${level?.label ?? "Contact showroom"}${level ? ` (${level.onHand} pcs on hand)` : ""}
 Stock checked     ${stock.checkedAt}

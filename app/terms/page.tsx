@@ -40,9 +40,9 @@ export default function TermsPage() {
           ],
         },
         {
-          heading: "Workmanship guarantee",
+          heading: "Workmanship",
           body: [
-            "We guarantee our installation workmanship for five years from handover. If a fault arising from our work appears in that period, we return and repair it at our cost.",
+            "Any workmanship guarantee is stated on your written quotation. Where one applies and a fault arising from our work appears within that period, we return and repair it at our cost.",
             "The guarantee does not cover damage from impact, unapproved modification, water ingress originating outside our scope, or normal wear.",
           ],
         },

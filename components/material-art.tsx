@@ -28,6 +28,9 @@ const TONES: Record<Tone, Ramp> = {
   charcoal: { light: "#514f4a", base: "#3a3835", dark: "#272520", deep: "#171510" },
   cedar: { light: "#ad7442", base: "#8b5b35", dark: "#623d21", deep: "#402714" },
   bronze: { light: "#b6915d", base: "#8f6e40", dark: "#654b2b", deep: "#43311c" },
+  carrara: { light: "#ffffff", base: "#f3f2ef", dark: "#cbc9c4", deep: "#8d8b86" },
+  calacatta: { light: "#fffdf7", base: "#f6f1e7", dark: "#cdb387", deep: "#9a7f52" },
+  nero: { light: "#8e8b86", base: "#2c2b28", dark: "#1a1917", deep: "#0d0c0b" },
 };
 
 interface Props {
@@ -71,6 +74,12 @@ export function MaterialArt({ surface, tone, className }: Props) {
           <stop offset="100%" stopColor={c.dark} />
         </linearGradient>
 
+        <linearGradient id={`slab-${uid}`} x1="0.1" x2="0.9" y1="0" y2="1">
+          <stop offset="0%" stopColor={c.light} />
+          <stop offset="50%" stopColor={c.base} />
+          <stop offset="100%" stopColor={c.light} />
+        </linearGradient>
+
         <linearGradient id={`sheen-${uid}`} x1="0" x2="0.6" y1="0" y2="1">
           <stop offset="0%" stopColor="#fff" stopOpacity="0.22" />
           <stop offset="45%" stopColor="#fff" stopOpacity="0.04" />
@@ -83,6 +92,7 @@ export function MaterialArt({ surface, tone, className }: Props) {
       {surface === "fluted" && <Fluted uid={uid} ramp={c} />}
       {surface === "deck" && <Deck uid={uid} ramp={c} />}
       {surface === "ceiling" && <Ceiling uid={uid} ramp={c} />}
+      {surface === "marble" && <Marble uid={uid} ramp={c} tone={tone} />}
 
       <rect width="400" height="300" fill={`url(#sheen-${uid})`} />
     </svg>
@@ -194,6 +204,69 @@ function Ceiling({ uid, ramp }: { uid: string; ramp: Ramp }) {
       {/* Light washing across the plane from the near corner. */}
       <ellipse cx="110" cy="30" rx="250" ry="130" fill="#fff" opacity={0.09} />
       <rect y="268" width="400" height="32" fill={ramp.deep} opacity={0.18} />
+    </g>
+  );
+}
+
+/**
+ * Marble slab. Veins are fixed bezier paths rather than random, so the sheet
+ * reads as a designed slab and stays identical between server and client.
+ */
+function Marble({ uid, ramp, tone }: { uid: string; ramp: Ramp; tone: Tone }) {
+  // Veining needs its own colour: derived from the ramp it came out far too
+  // pale to read at card size on the white boards.
+  const vein =
+    tone === "nero" ? "#cfcac2" : tone === "calacatta" ? "#a8813a" : "#6e6b65";
+  const secondary =
+    tone === "nero" ? "#8d8880" : tone === "calacatta" ? "#c9ab6d" : "#a5a29c";
+
+  const majors = [
+    "M-20 210 C 60 170, 120 205, 190 150 S 320 95, 430 120",
+    "M-20 70 C 70 105, 150 55, 240 92 S 360 150, 430 118",
+    "M-20 265 C 90 240, 150 285, 250 250 S 350 205, 430 232",
+  ];
+
+  const hairlines = [
+    "M40 300 C 80 240, 70 200, 120 160",
+    "M210 0 C 190 60, 230 95, 205 150",
+    "M300 300 C 330 250, 300 210, 345 165",
+    "M120 0 C 150 40, 110 80, 145 120",
+    "M355 60 C 330 100, 375 130, 350 175",
+    "M-10 140 C 60 120, 90 160, 150 138",
+    "M250 300 C 265 255, 240 225, 275 195",
+    "M170 200 C 210 215, 240 190, 290 205",
+  ];
+
+  return (
+    <g>
+      <rect width="400" height="300" fill={`url(#slab-${uid})`} />
+
+      {/* Broad tonal drift, so the ground is not a flat colour. */}
+      <ellipse cx="90" cy="90" rx="200" ry="130" fill={ramp.dark} opacity={0.2} />
+      <ellipse cx="330" cy="240" rx="180" ry="120" fill={ramp.dark} opacity={0.16} />
+
+      {majors.map((d, i) => (
+        <g key={i}>
+          {/* Wide soft halo, then the sharp vein on top. */}
+          <path d={d} fill="none" stroke={secondary} strokeWidth={13 - i * 2.2} opacity={0.3} strokeLinecap="round" />
+          <path d={d} fill="none" stroke={vein} strokeWidth={4.2 - i * 0.9} opacity={0.82} strokeLinecap="round" />
+        </g>
+      ))}
+
+      {hairlines.map((d, i) => (
+        <path
+          key={i}
+          d={d}
+          fill="none"
+          stroke={vein}
+          strokeWidth={i % 2 === 0 ? 1.3 : 0.8}
+          opacity={0.5}
+          strokeLinecap="round"
+        />
+      ))}
+
+      {/* The UV coat: a low, wide gloss band. */}
+      <path d="M-20 300 L 180 -20 L 260 -20 L 60 300 Z" fill="#fff" opacity={0.07} />
     </g>
   );
 }

@@ -124,18 +124,17 @@ export function QualityBand() {
             <span className="text-rust-2">direct from the source.</span>
           </h2>
           <p className="mt-6 text-[16px] leading-relaxed text-white/65">
-            By importing our own containers and installing with our own crews, we cut the two
-            margins that usually sit between a specifier and a finished wall. You get trade pricing,
-            one accountable team, and a five-year workmanship guarantee in writing.
+            We supply and install, so one team is answerable for the finish from the first measure
+            to the last trim. Affordable and premium finishes, quoted in writing before work starts.
           </p>
         </div>
 
         <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ["01", "We import direct", "Our own containers, cleared at Port of Manila. No local distributor markup."],
-            ["02", "We fit it ourselves", "Eleven in-house installers. No subcontracted crews learning on your job."],
-            ["03", "Priced on the spot", "Measured quote inside two business days, itemised down to the trim."],
-            ["04", "Guaranteed five years", "Workmanship covered in writing. If it fails on us, we return and fix it."],
+            ["01", "Supply and install", "One team measures, supplies, and fits. Nothing is handed off midway."],
+            ["02", "Priced before we start", "A written, itemised quotation you approve before any work begins."],
+            ["03", "Built for Baguio", "Moisture-resistant finishes chosen for a cool, damp, high-altitude climate."],
+            ["04", "Always reachable", "Open daily, and we answer on Facebook the same day."],
           ].map(([num, title, body]) => (
             <div key={num}>
               <span className="text-[13px] font-bold tracking-[0.18em] text-rust-2">{num}</span>
@@ -269,13 +268,13 @@ export function BookingBand({ children }: { children: React.ReactNode }) {
             <span className="text-rust-2">consultation.</span>
           </h2>
           <p className="mt-5 max-w-[42ch] text-[16px] leading-relaxed text-white/65">
-            Tell us about your space and confirm by email within one business day — no waiting on a
-            Messenger reply. Bring your plans to the showroom, or have us come measure on site.
+            Tell us about your space and we will confirm your slot by email. Prefer to chat? We are
+            on Facebook daily. Bring your plans to Irisan, or have us come and measure on site.
           </p>
 
           <ul className="mt-8 space-y-4">
             {[
-              ["Showroom consultation", "Samples in hand, 45 minutes, Irisan Road."],
+              ["Showroom consultation", "Samples in hand, 45 minutes, at Irisan."],
               ["On-site visit", "We measure, photograph, and quote from the actual space."],
               ["Video call", "For clients specifying from outside Benguet."],
             ].map(([title, body]) => (

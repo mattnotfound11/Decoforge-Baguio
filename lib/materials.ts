@@ -6,14 +6,15 @@
  * for how to point it at a real inventory system.
  */
 
-export type CategoryId = "pvc-ceilings" | "fluted-panels" | "decking";
+export type CategoryId = "uv-marble" | "pvc-ceilings" | "fluted-panels" | "decking";
 
 export type Tone =
   | "dust-grey" | "matte-white" | "ash" | "ivory"
   | "terracotta" | "natural-oak" | "mahogany" | "espresso" | "pinewood"
-  | "charcoal" | "cedar" | "bronze";
+  | "charcoal" | "cedar" | "bronze"
+  | "carrara" | "calacatta" | "nero";
 
-export type Surface = "fluted" | "deck" | "ceiling";
+export type Surface = "fluted" | "deck" | "ceiling" | "marble";
 
 export interface Material {
   slug: string;
@@ -24,8 +25,8 @@ export interface Material {
   tone: Tone;
   /** Showroom price, per piece, in pesos. */
   pricePhp: number;
-  /** Export price per square foot, quoted on the spec sheet. */
-  priceUsdSqft: number;
+  /** Area one piece covers, in square feet. 0 for linear trims. */
+  coverageSqft: number;
   unit: string;
   baselineStock: number;
   leadTime: string;
@@ -47,15 +48,102 @@ export interface Material {
 
 export const categories: { id: CategoryId | "all"; label: string }[] = [
   { id: "all", label: "All Materials" },
+  { id: "uv-marble", label: "UV Marble Boards" },
   { id: "pvc-ceilings", label: "PVC Ceilings" },
   { id: "fluted-panels", label: "Fluted Panels" },
   { id: "decking", label: "Decking" },
 ];
 
 export const categoryLabel = (id: CategoryId) =>
-  ({ "pvc-ceilings": "PVC Ceiling", "fluted-panels": "Fluted Panel", decking: "Decking" })[id];
+  ({
+    "uv-marble": "UV Marble Board",
+    "pvc-ceilings": "PVC Ceiling",
+    "fluted-panels": "Fluted Panel",
+    decking: "Decking",
+  })[id];
 
 export const materials: Material[] = [
+  {
+    slug: "uv-marble-carrara-white",
+    name: "UV Marble Board",
+    finish: "Carrara White",
+    category: "uv-marble",
+    surface: "marble",
+    tone: "carrara",
+    pricePhp: 3200,
+    coverageSqft: 32.04,
+    unit: "sheet",
+    baselineStock: 74,
+    leadTime: "In stock — same week",
+    sustainable: false,
+    featured: true,
+    summary: "Full sheet of cool grey Carrara veining under a hard UV coat.",
+    description:
+      "A full 8ft x 4ft sheet that gives you the look of honed Carrara without the weight, the wet cutting, or the price. The UV-cured surface is what makes it work in a Baguio bathroom — it will not absorb moisture, and it wipes clean rather than staining.",
+    specs: {
+      dimensions: "2440 mm L x 1220 mm W x 3 mm T",
+      composition: "PVC core with UV-cured marble film",
+      installation: "Adhesive on a flat, dry substrate",
+      fireRating: "Class B (ASTM E84)",
+      acoustic: "Not rated",
+      maintenance: "Wipe with damp cloth; no abrasives or solvents",
+    },
+    pairings: ["uv-marble-calacatta-gold", "matte-white-flat", "edge-trim-bronze"],
+  },
+  {
+    slug: "uv-marble-calacatta-gold",
+    name: "UV Marble Board",
+    finish: "Calacatta Gold",
+    category: "uv-marble",
+    surface: "marble",
+    tone: "calacatta",
+    pricePhp: 3650,
+    coverageSqft: 32.04,
+    unit: "sheet",
+    baselineStock: 41,
+    leadTime: "In stock — same week",
+    sustainable: false,
+    featured: true,
+    summary: "Warm gold veining that carries the eye across a full feature wall.",
+    description:
+      "The warmest board in the range. Gold veining runs on a large repeat, so a two-sheet wall reads as one continuous slab rather than a tiled pattern — worth planning your cuts around.",
+    specs: {
+      dimensions: "2440 mm L x 1220 mm W x 3 mm T",
+      composition: "PVC core with UV-cured marble film",
+      installation: "Adhesive on a flat, dry substrate",
+      fireRating: "Class B (ASTM E84)",
+      acoustic: "Not rated",
+      maintenance: "Wipe with damp cloth; no abrasives or solvents",
+    },
+    pairings: ["uv-marble-carrara-white", "espresso-linear-ceiling", "edge-trim-bronze"],
+  },
+  {
+    slug: "uv-marble-nero-charcoal",
+    name: "UV Marble Board",
+    finish: "Nero Charcoal",
+    category: "uv-marble",
+    surface: "marble",
+    tone: "nero",
+    pricePhp: 3450,
+    coverageSqft: 32.04,
+    unit: "sheet",
+    baselineStock: 11,
+    leadTime: "2 weeks on reorder",
+    sustainable: false,
+    featured: false,
+    summary: "Near-black board with bright veining, for counters and accent walls.",
+    description:
+      "The dark end of the range. Bright veining on a near-black ground gives a counter run or a splashback real depth, and it hides the everyday marks that show up fast on a pale board.",
+    specs: {
+      dimensions: "2440 mm L x 1220 mm W x 3 mm T",
+      composition: "PVC core with UV-cured marble film",
+      installation: "Adhesive on a flat, dry substrate",
+      fireRating: "Class B (ASTM E84)",
+      acoustic: "Not rated",
+      maintenance: "Wipe with damp cloth; no abrasives or solvents",
+    },
+    pairings: ["uv-marble-calacatta-gold", "charcoal-composite", "edge-trim-bronze"],
+  },
   {
     slug: "dust-grey-profile",
     name: "Dust Grey Profile",
@@ -64,7 +152,7 @@ export const materials: Material[] = [
     surface: "ceiling",
     tone: "dust-grey",
     pricePhp: 650,
-    priceUsdSqft: 11.5,
+    coverageSqft: 10.49,
     unit: "pc",
     baselineStock: 184,
     leadTime: "In stock — same week",
@@ -91,7 +179,7 @@ export const materials: Material[] = [
     surface: "ceiling",
     tone: "matte-white",
     pricePhp: 580,
-    priceUsdSqft: 10.2,
+    coverageSqft: 12.59,
     unit: "pc",
     baselineStock: 240,
     leadTime: "In stock — same week",
@@ -118,7 +206,7 @@ export const materials: Material[] = [
     surface: "ceiling",
     tone: "espresso",
     pricePhp: 780,
-    priceUsdSqft: 13.4,
+    coverageSqft: 8.4,
     unit: "pc",
     baselineStock: 62,
     leadTime: "In stock — same week",
@@ -145,7 +233,7 @@ export const materials: Material[] = [
     surface: "ceiling",
     tone: "ivory",
     pricePhp: 720,
-    priceUsdSqft: 12.6,
+    coverageSqft: 12.59,
     unit: "pc",
     baselineStock: 8,
     leadTime: "2 weeks on reorder",
@@ -172,7 +260,7 @@ export const materials: Material[] = [
     surface: "fluted",
     tone: "terracotta",
     pricePhp: 1200,
-    priceUsdSqft: 38.0,
+    coverageSqft: 4.99,
     unit: "pc",
     baselineStock: 96,
     leadTime: "In stock — same week",
@@ -199,7 +287,7 @@ export const materials: Material[] = [
     surface: "fluted",
     tone: "natural-oak",
     pricePhp: 1450,
-    priceUsdSqft: 41.5,
+    coverageSqft: 4.99,
     unit: "pc",
     baselineStock: 128,
     leadTime: "In stock — same week",
@@ -226,7 +314,7 @@ export const materials: Material[] = [
     surface: "fluted",
     tone: "mahogany",
     pricePhp: 1680,
-    priceUsdSqft: 45.0,
+    coverageSqft: 5.15,
     unit: "pc",
     baselineStock: 74,
     leadTime: "2–3 Weeks",
@@ -253,7 +341,7 @@ export const materials: Material[] = [
     surface: "fluted",
     tone: "ivory",
     pricePhp: 1320,
-    priceUsdSqft: 36.5,
+    coverageSqft: 4.99,
     unit: "pc",
     baselineStock: 41,
     leadTime: "In stock — same week",
@@ -280,7 +368,7 @@ export const materials: Material[] = [
     surface: "deck",
     tone: "charcoal",
     pricePhp: 2100,
-    priceUsdSqft: 22.0,
+    coverageSqft: 4.37,
     unit: "pc",
     baselineStock: 9,
     leadTime: "3 weeks on reorder",
@@ -291,7 +379,7 @@ export const materials: Material[] = [
       "A dense composite board in a deep charcoal that holds its colour through Baguio's wet season. The grooved face keeps its grip when wet, which is the whole reason it gets specified for terraces on sloping lots.",
     specs: {
       dimensions: "2900 mm L x 140 mm W x 25 mm T",
-      composition: "WPC, 60% reclaimed hardwood fibre",
+      composition: "WPC (Wood Plastic Composite) with reclaimed fibre core",
       installation: "Hidden clip on 400 mm joists",
       fireRating: "Class B (ASTM E84)",
       acoustic: "Not rated (exterior)",
@@ -307,7 +395,7 @@ export const materials: Material[] = [
     surface: "deck",
     tone: "cedar",
     pricePhp: 2100,
-    priceUsdSqft: 22.0,
+    coverageSqft: 4.37,
     unit: "pc",
     baselineStock: 156,
     leadTime: "In stock — same week",
@@ -318,7 +406,7 @@ export const materials: Material[] = [
       "The warm end of the decking range. Colour is run through the full thickness rather than printed on the face, so a scratch from a dragged chair does not show a different colour underneath.",
     specs: {
       dimensions: "2900 mm L x 140 mm W x 25 mm T",
-      composition: "WPC, 60% reclaimed hardwood fibre",
+      composition: "WPC (Wood Plastic Composite) with reclaimed fibre core",
       installation: "Hidden clip on 400 mm joists",
       fireRating: "Class B (ASTM E84)",
       acoustic: "Not rated (exterior)",
@@ -334,7 +422,7 @@ export const materials: Material[] = [
     surface: "deck",
     tone: "cedar",
     pricePhp: 2340,
-    priceUsdSqft: 24.5,
+    coverageSqft: 6.24,
     unit: "pc",
     baselineStock: 88,
     leadTime: "In stock — same week",
@@ -345,7 +433,7 @@ export const materials: Material[] = [
       "A wider board than the rest of the range, sized so a terrace can run out from an interior floor without a change in module. For seamless indoor-outdoor flow.",
     specs: {
       dimensions: "2900 mm L x 200 mm W x 25 mm T",
-      composition: "WPC, 60% reclaimed hardwood fibre",
+      composition: "WPC (Wood Plastic Composite) with reclaimed fibre core",
       installation: "Hidden clip on 400 mm joists",
       fireRating: "Class B (ASTM E84)",
       acoustic: "Not rated (exterior)",
@@ -361,7 +449,7 @@ export const materials: Material[] = [
     surface: "deck",
     tone: "bronze",
     pricePhp: 460,
-    priceUsdSqft: 8.0,
+    coverageSqft: 0,  // linear trim — priced per length, not per area
     unit: "pc",
     baselineStock: 310,
     leadTime: "In stock — same week",

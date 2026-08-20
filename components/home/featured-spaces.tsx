@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { projects } from "@/lib/projects";
-import { unsplash } from "@/lib/site";
+import { site, unsplash } from "@/lib/site";
 
 export function FeaturedSpaces() {
   const [alpine, villa, studio] = projects;
@@ -74,24 +74,36 @@ export function FeaturedSpaces() {
               </div>
             </Link>
 
-            {/* Testimonial fills what would otherwise be a gap in the grid. */}
+            {/* Real, checkable social proof in place of an invented quote. */}
             <figure className="rounded-card border border-white/10 bg-ink-2 p-6">
-              <div className="flex gap-0.5 text-rust-2" aria-label="Five out of five">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <svg key={i} width="15" height="15" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M10 1.6l2.5 5.3 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z" />
+              <a href={site.facebook} target="_blank" rel="noreferrer" className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#1877F2]">
+                  <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M11.5 18v-6h2l.4-2.6h-2.4V7.7c0-.75.2-1.26 1.28-1.26H14V4.12A17 17 0 0012.02 4C10.06 4 8.7 5.2 8.7 7.4v2H6.5V12h2.2v6z" fill="#fff" />
                   </svg>
-                ))}
-              </div>
-              <blockquote className="mt-3.5 text-[15px] leading-relaxed text-white/80">
-                &ldquo;The attention to detail was remarkable. The Decoforge team completely
-                redefined our living space, adding a texture and warmth we hadn&rsquo;t found
-                anywhere else in Baguio.&rdquo;
-              </blockquote>
-              <figcaption className="mt-4 text-[13px]">
-                <span className="font-bold">Maria Santos</span>
-                <span className="block text-white/50">Homeowner · Outlook Drive</span>
-              </figcaption>
+                </span>
+                <span>
+                  <span className="block text-[15px] font-bold">{site.followers} followers</span>
+                  <span className="block text-[13px] text-white/55">on Facebook</span>
+                </span>
+              </a>
+
+              <p className="mt-4 text-[15px] leading-relaxed text-white/70">
+                We post finished installations, new stock, and price updates on Facebook first. It
+                is also the fastest way to reach us — we reply there daily.
+              </p>
+
+              <a
+                href={site.facebook}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 inline-flex items-center gap-2 text-[13px] font-bold uppercase tracking-[0.12em] text-rust-2 transition hover:gap-3"
+              >
+                Visit our page
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M3 10h13M11 5l5 5-5 5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
             </figure>
           </div>
         </div>

@@ -4,14 +4,15 @@ const peso = new Intl.NumberFormat("en-PH", {
   maximumFractionDigits: 0,
 });
 
-/** ₱1,200 — the catalog quotes whole pesos, never centavos. */
+/** ₱1,200 — every price on the site is quoted in Philippine pesos. */
 export const formatPeso = (amount: number) => peso.format(amount);
 
-const usd = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-});
+/** ₱62 — rounded to the nearest peso for per-square-foot rates. */
+export const formatPesoRate = (amount: number) => peso.format(Math.round(amount));
 
-/** Spec sheets quote per-square-foot pricing in USD for export clients. */
-export const formatUsd = (amount: number) => usd.format(amount);
+/**
+ * Rate per square foot, derived from the piece price and the panel's coverage
+ * so the two figures can never drift apart.
+ */
+export const pesoPerSqft = (pricePhp: number, coverageSqft: number) =>
+  coverageSqft > 0 ? pricePhp / coverageSqft : 0;

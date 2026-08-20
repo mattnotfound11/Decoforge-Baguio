@@ -24,7 +24,7 @@ export function Hero() {
         <div>
           <span className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white/75">
             <span className="h-1.5 w-1.5 rounded-full bg-rust-2" aria-hidden="true" />
-            Showroom on Irisan Road · Est. 2016
+            Irisan, Baguio City · Open daily
           </span>
 
           <h1 className="mt-7 text-[clamp(2.75rem,7.4vw,4.9rem)] font-extrabold uppercase">
@@ -36,9 +36,9 @@ export function Hero() {
           </h1>
 
           <p className="mt-7 max-w-[46ch] text-[17px] leading-relaxed text-white/70">
-            Decoforge brings unfussed architectural precision to Baguio City. We specialise in the
-            expert installation of premium PVC ceilings, fluted panels, and WPC decking — supplied
-            and fitted by one team, direct from the source.
+            Elevate your space with affordable and premium home decor finishes. UV marble boards,
+            PVC ceilings, fluted wall panels, and WPC decking — supplied and installed across Baguio
+            City and the Cordilleras.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3">
@@ -58,12 +58,12 @@ export function Hero() {
 
           <dl className="mt-12 flex flex-wrap gap-x-10 gap-y-6">
             {[
-              ["9 yrs", "in the same showroom"],
-              ["340+", "installations delivered"],
-              ["2–3 wks", "typical lead time"],
+              ["2.8K", "followers on Facebook"],
+              ["Open daily", "message us any time"],
+              ["Free", "quotation and site measure"],
             ].map(([value, label]) => (
               <div key={label}>
-                <dt className="text-[28px] font-extrabold tracking-[-0.03em]">{value}</dt>
+                <dt className="text-[24px] font-extrabold tracking-[-0.03em] sm:text-[28px]">{value}</dt>
                 <dd className="mt-0.5 text-[13px] text-white/55">{label}</dd>
               </div>
             ))}

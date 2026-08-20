@@ -12,13 +12,13 @@ export default function CareersPage() {
     <ProsePage
       title="Careers"
       updated="1 January 2024"
-      intro="We are eleven people in one workshop on Irisan Road. When we hire, it is because the work is there — not to build a headcount."
+      intro="We are a small team in Irisan, Baguio City. When we hire, it is because the work is there — not to build a headcount."
       sections={[
         {
           heading: "How we work",
           body: [
-            "Four installers, two finishers, a welder, two estimators, and the two of us who draw. Everyone works on real jobs; nobody is kept on a bench.",
-            "We do not subcontract installation. That means the person who measures your job is usually the person who fits it, and it is why we can put a five-year guarantee in writing.",
+            "Everyone works on real jobs. Installers, finishers, and estimators all spend time on site rather than behind a desk.",
+            "We do not subcontract installation. The person who measures your job is usually the person who fits it, which is how we keep the finish consistent.",
           ],
         },
         {

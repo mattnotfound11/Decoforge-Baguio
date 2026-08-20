@@ -1,7 +1,11 @@
 # Decoforge Baguio
 
-Marketing and booking site for Decoforge Architectural Surfaces — a PVC ceiling,
-fluted panel, and WPC decking supplier in Baguio City.
+Marketing and booking site for **Decoforge Home And Aesthetics** — a UV marble
+board, PVC ceiling, fluted panel, and WPC decking supplier in Irisan, Baguio City.
+
+Brand facts (name, address, phone, email, hours, Facebook) come from the
+official page and live in `lib/site.ts`:
+<https://www.facebook.com/people/Decoforge-Home-And-Aesthetics/61578740650682/>
 
 Next.js 16 (App Router) + Tailwind v4, deployed on Vercel.
 
@@ -48,9 +52,15 @@ the email address that owns the account — that is a Resend rule, not a bug her
 | `/catalog/[slug]` | Product detail, specs, pairings, spec-sheet download |
 | `/projects` | Featured installations |
 | `/contact` | Contact details and the appointment booking form |
+| `/landing` | Standalone campaign page for Facebook ad traffic — no nav, one CTA, `noindex` |
 | `/privacy`, `/terms`, `/sustainability`, `/careers` | Footer pages |
 
 ## How the pieces fit
+
+**All prices are in Philippine pesos.** `pricePhp` is the per-piece price and
+is the only figure stored; the per-square-foot rate shown on product pages is
+derived from `pricePhp / coverageSqft` at render time, so the two can never
+drift apart. There is no USD anywhere.
 
 **Content** lives in `lib/`. `materials.ts` is the catalog — adding a finish
 there puts it in the grid, gives it a product page, and generates its spec
@@ -89,6 +99,13 @@ limit of five submissions per ten minutes.
 - **The legal pages are drafts.** `/privacy` and `/terms` are written for this
   business but have not been reviewed by a lawyer. Get counsel to read them
   before relying on them.
+- **Catalog prices and stock counts are placeholders.** Product names, specs,
+  peso prices, and `baselineStock` in `lib/materials.ts` were written to be
+  plausible, not quoted from Decoforge. Replace them with real figures before
+  advertising these prices.
+- **Project case studies are illustrative.** The three entries in
+  `lib/projects.ts` and all room photography are stand-ins. Swap in real
+  installations — the Facebook page has them.
 
 ## Deploying
 

@@ -7,6 +7,7 @@ export const APPOINTMENT_TYPES = [
 ] as const;
 
 export const INTERESTS = [
+  "UV Marble Boards",
   "PVC Ceilings",
   "Fluted Panels",
   "Decking",
@@ -14,7 +15,7 @@ export const INTERESTS = [
   "Not sure yet",
 ] as const;
 
-/** Showroom runs Mon–Sat; these are the slots the team keeps open. */
+/** Appointment slots the team keeps open. The shop itself is always open. */
 export const TIME_SLOTS = [
   { value: "09:00", label: "9:00 AM" },
   { value: "10:30", label: "10:30 AM" },
@@ -49,8 +50,11 @@ const PHONE_RE = /^[+(\d][\d\s()+-]{6,19}$/;
 const clean = (value: unknown, max: number) =>
   typeof value === "string" ? value.trim().replace(/\s+/g, " ").slice(0, max) : "";
 
-/** Sunday is closed, so it is never a bookable date. */
-export const isClosedDay = (iso: string) => new Date(`${iso}T12:00:00`).getUTCDay() === 0;
+/**
+ * The Facebook page lists Decoforge as always open, so every day is bookable.
+ * Kept as a function so a future closed day is a one-line change.
+ */
+export const isClosedDay = (_iso: string) => false;
 
 export function todayInManila(): string {
   // The showroom books against Manila local time, not the visitor's timezone.
@@ -106,7 +110,7 @@ export function validateBooking(body: Record<string, unknown>): {
   } else if (value.date > maxBookingDate()) {
     errors.date = `We only take bookings ${BOOKING_WINDOW_DAYS} days ahead.`;
   } else if (isClosedDay(value.date)) {
-    errors.date = "The showroom is closed on Sundays.";
+    errors.date = "That date is not available.";
   }
 
   if (!TIME_SLOTS.some((slot) => slot.value === value.time)) {

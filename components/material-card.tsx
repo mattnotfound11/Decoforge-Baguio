@@ -30,6 +30,11 @@ export function MaterialCard({ material }: { material: Material }) {
           </Link>
         </h3>
 
+        {/* Ranges like UV Marble share one name, so the finish has to show. */}
+        {!material.name.toLowerCase().includes(material.finish.toLowerCase()) && (
+          <p className="text-[15px] font-bold text-rust">{material.finish}</p>
+        )}
+
         <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-muted">{material.summary}</p>
 
         <div className="mt-5 flex items-end justify-between gap-3 pt-1">

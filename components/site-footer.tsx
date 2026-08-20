@@ -20,6 +20,20 @@ export function SiteFooter({ variant = "light" }: { variant?: "light" | "dark" }
             <br />
             {site.showroom.line2}
           </p>
+
+          <a
+            href={site.facebook}
+            target="_blank"
+            rel="noreferrer"
+            className={`mt-5 inline-flex items-center gap-2.5 rounded-lg px-4 py-2.5 text-[14px] font-semibold transition ${
+              dark ? "bg-white/10 text-white hover:bg-white/15" : "bg-white text-ink hover:bg-white/70"
+            }`}
+          >
+            <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M11.5 18v-6h2l.4-2.6h-2.4V7.7c0-.75.2-1.26 1.28-1.26H14V4.12A17 17 0 0012.02 4C10.06 4 8.7 5.2 8.7 7.4v2H6.5V12h2.2v6z" fill="#1877F2" />
+            </svg>
+            Follow us on Facebook
+          </a>
         </div>
 
         <nav aria-label="Footer" className="flex flex-col gap-3">
