@@ -48,15 +48,15 @@ export default async function ContactPage({
 
           <div className="container-df relative">
             <div className="mx-auto max-w-3xl text-center">
-              <h1 className="text-[clamp(2.5rem,7vw,4.3rem)] font-extrabold">Let&rsquo;s Talk Design.</h1>
-              <p className="mx-auto mt-5 max-w-[58ch] text-[17px] leading-relaxed text-white/70">
-                Connect with our architectural surface experts in Baguio City. We are ready to bring
-                your refined visions to life.
+              <h1 className="rise text-[clamp(2.5rem,7vw,4.3rem)] font-extrabold">Let&rsquo;s Talk Design.</h1>
+              <p className="rise mx-auto mt-5 max-w-[58ch] text-[17px] leading-relaxed text-white/70" style={{ animationDelay: "90ms" }}>
+                Connect with our home decor and finishing team in Irisan, Baguio City. We are ready
+                to bring your refined visions to life.
               </p>
             </div>
 
             <div className="mt-14 grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-8 lg:items-start">
-              <div className="grid gap-6">
+              <div className="grid gap-6" data-reveal="left">
                 <div className="rounded-card border border-white/10 bg-white/[0.04] p-7">
                   <h2 className="text-[26px] font-extrabold tracking-[-0.02em]">Contact Us</h2>
 
@@ -149,7 +149,9 @@ export default async function ContactPage({
                 </div>
               </div>
 
-              <BookingForm prefill={prefill} />
+              <div data-reveal="right">
+                <BookingForm prefill={prefill} />
+              </div>
             </div>
           </div>
         </section>

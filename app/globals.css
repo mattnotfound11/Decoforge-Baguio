@@ -63,6 +63,13 @@
       transition-duration: 0.001ms !important;
       scroll-behavior: auto !important;
     }
+
+    [data-reveal],
+    .rise {
+      opacity: 1 !important;
+      transform: none !important;
+      animation: none !important;
+    }
   }
 }
 
@@ -101,4 +108,71 @@
 
 @utility animate-marquee {
   animation: df-marquee 32s linear infinite;
+}
+
+
+/* ============================================================== motion ==== */
+
+/*
+ * Scroll reveal. Elements ship hidden and are un-hidden by components/scroll-
+ * reveal.tsx once they enter the viewport. The <noscript> rule below keeps the
+ * page readable if JavaScript never runs.
+ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Slight horizontal drift for side-by-side content. */
+[data-reveal="left"] { transform: translate3d(-26px, 0, 0); }
+[data-reveal="right"] { transform: translate3d(26px, 0, 0); }
+[data-reveal="scale"] { transform: scale(0.96); }
+
+@keyframes df-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* On-load entrance, used for above-the-fold content that never needs an observer. */
+@utility rise {
+  animation: df-rise 0.85s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes df-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -14px, 0); }
+}
+
+@utility float-slow {
+  animation: df-float 9s ease-in-out infinite;
+}
+
+@keyframes df-sheen {
+  from { transform: translateX(-120%) skewX(-18deg); }
+  to { transform: translateX(320%) skewX(-18deg); }
+}
+
+/* A light sweep across a card face on hover. */
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated underline shared by the primary nav links. */
+@utility nav-underline {
+  position: relative;
 }

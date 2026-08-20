@@ -83,20 +83,20 @@ export default function LandingPage() {
                 Irisan, Baguio City · Open daily
               </span>
 
-              <h1 className="mt-6 text-[clamp(2.4rem,6.6vw,4.2rem)] font-extrabold uppercase">
+              <h1 className="rise mt-6 text-[clamp(2.4rem,6.6vw,4.2rem)] font-extrabold uppercase" style={{ animationDelay: "80ms" }}>
                 Affordable, premium
                 <br />
                 <span className="text-rust-2">home decor finishes.</span>
               </h1>
 
-              <p className="mt-6 max-w-[52ch] text-[17px] leading-relaxed text-white/75">
+              <p className="rise mt-6 max-w-[52ch] text-[17px] leading-relaxed text-white/75" style={{ animationDelay: "170ms" }}>
                 UV marble boards, PVC ceilings, fluted wall panels, and WPC decking — supplied
                 <em className="not-italic font-semibold text-white"> and installed</em> by one team
                 in Baguio City. Free quotation and site measure, priced in pesos before any work
                 begins.
               </p>
 
-              <div className="mt-9 flex flex-wrap gap-3">
+              <div className="rise mt-9 flex flex-wrap gap-3" style={{ animationDelay: "260ms" }}>
                 <a
                   href="#book"
                   className="inline-flex items-center justify-center rounded-lg bg-rust px-8 py-4 text-[16px] font-bold transition hover:bg-rust-2"
@@ -114,7 +114,7 @@ export default function LandingPage() {
                 </a>
               </div>
 
-              <ul className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-[14px] text-white/70">
+              <ul className="rise mt-10 flex flex-wrap gap-x-8 gap-y-3 text-[14px] text-white/70" style={{ animationDelay: "350ms" }}>
                 {["Free site measure", "Written peso quotation", "Supply and install", `${site.followers} followers on Facebook`].map((t) => (
                   <li key={t} className="inline-flex items-center gap-2">
                     <svg width="16" height="16" viewBox="0 0 20 20" fill="none" className="text-rust-2" aria-hidden="true">
@@ -131,7 +131,7 @@ export default function LandingPage() {
         {/* --------------------------------------------------- what we do -- */}
         <section className="py-16 sm:py-20">
           <div className="container-df">
-            <div className="mx-auto max-w-2xl text-center">
+            <div className="mx-auto max-w-2xl text-center" data-reveal>
               <h2 className="text-[clamp(1.8rem,4.2vw,2.6rem)] font-extrabold uppercase">
                 What we supply and install
               </h2>
@@ -141,11 +141,11 @@ export default function LandingPage() {
             </div>
 
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {ranges.map(({ id, cheapest }) => (
+              {ranges.map(({ id, cheapest }, i) => (
+                <div key={id} data-reveal style={{ transitionDelay: `${i * 90}ms` }}>
                 <Link
-                  key={id}
                   href={`/catalog?c=${id}`}
-                  className="group overflow-hidden rounded-card border border-stone bg-white transition hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(23,18,16,0.45)]"
+                  className="group flex h-full flex-col overflow-hidden rounded-card border border-stone bg-white transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(23,18,16,0.45)]"
                 >
                   <div className="relative aspect-[5/4] overflow-hidden">
                     <MaterialArt
@@ -175,6 +175,7 @@ export default function LandingPage() {
                     )}
                   </div>
                 </Link>
+                </div>
               ))}
             </div>
 
@@ -195,11 +196,11 @@ export default function LandingPage() {
         {/* ------------------------------------------------------- steps -- */}
         <section className="bg-cream-2 py-16 sm:py-20">
           <div className="container-df">
-            <h2 className="text-center text-[clamp(1.8rem,4.2vw,2.6rem)] font-extrabold uppercase">
+            <h2 className="text-center text-[clamp(1.8rem,4.2vw,2.6rem)] font-extrabold uppercase" data-reveal>
               Three steps, no surprises
             </h2>
 
-            <div className="mt-12 grid gap-8 md:grid-cols-3">
+            <div className="mt-12 grid gap-8 md:grid-cols-3" data-reveal>
               {[
                 ["Tell us about the space", "Send photos and rough measurements, or book a free site visit. Either works."],
                 ["Get a peso quotation", "Itemised in writing — materials, installation, and trims. You approve before we start."],
@@ -260,7 +261,9 @@ export default function LandingPage() {
               </dl>
             </div>
 
-            <BookingForm />
+            <div data-reveal="right">
+              <BookingForm />
+            </div>
           </div>
         </section>
       </main>

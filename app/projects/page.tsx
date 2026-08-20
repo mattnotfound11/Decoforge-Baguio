@@ -22,15 +22,15 @@ export default function ProjectsPage() {
         <div className="pinstripe-light absolute inset-0" aria-hidden="true" />
 
         <div className="container-df relative py-16 sm:py-20">
-          <h1 className="max-w-[14ch] text-[clamp(2.75rem,8vw,4.6rem)] font-extrabold text-rust">
+          <h1 className="rise max-w-[14ch] text-[clamp(2.75rem,8vw,4.6rem)] font-extrabold text-rust">
             Featured Projects
           </h1>
-          <p className="mt-6 max-w-[62ch] text-[17px] leading-relaxed text-ink/75">
+          <p className="rise mt-6 max-w-[62ch] text-[17px] leading-relaxed text-ink/75" style={{ animationDelay: "90ms" }}>
             A curated selection of our premium installations across Baguio. Explore how Decoforge
             surfaces transform high-end residential and commercial spaces.
           </p>
 
-          <div className="mt-14 grid gap-6 lg:grid-cols-[1.55fr_1fr]">
+          <div className="mt-14 grid gap-6 lg:grid-cols-[1.55fr_1fr]" data-reveal>
             {/* Alpine: image with the detail card lifted over its lower edge. */}
             <article className="relative">
               <div className="relative aspect-[16/11] overflow-hidden rounded-card">
@@ -95,7 +95,7 @@ export default function ProjectsPage() {
             </article>
           </div>
 
-          <article className="mt-6 grid overflow-hidden rounded-card bg-white lg:grid-cols-2">
+          <article className="mt-6 grid overflow-hidden rounded-card bg-white lg:grid-cols-2" data-reveal>
             <div className="order-2 p-7 sm:p-10 lg:order-1 lg:self-center">
               <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-rust">
                 {studio.kindLabel}
@@ -125,7 +125,7 @@ export default function ProjectsPage() {
             </div>
           </article>
 
-          <div className="mt-16 rounded-card bg-ink px-7 py-12 text-center text-white sm:px-10">
+          <div className="mt-16 rounded-card bg-ink px-7 py-12 text-center text-white sm:px-10" data-reveal="scale">
             <h2 className="text-[clamp(1.6rem,3.6vw,2.3rem)] font-extrabold uppercase">
               Have a space in mind?
             </h2>

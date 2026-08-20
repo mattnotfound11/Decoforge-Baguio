@@ -15,7 +15,7 @@ export function SiteHeader({ variant = "light" }: { variant?: "light" | "dark" }
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -39,20 +39,23 @@ export function SiteHeader({ variant = "light" }: { variant?: "light" | "dark" }
   return (
     <header
       className={[
-        "sticky top-0 z-50 transition-colors duration-300",
-        dark
-          ? scrolled
-            ? "bg-ink/95 backdrop-blur border-b border-white/10"
-            : "bg-ink border-b border-transparent"
+        "sticky top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-500",
+        // Solid behind the open mobile sheet, otherwise transparent until scroll.
+        open
+          ? dark
+            ? "border-white/10 bg-ink"
+            : "border-stone bg-cream"
           : scrolled
-            ? "bg-cream/95 backdrop-blur border-b border-stone"
-            : "bg-cream border-b border-transparent",
+            ? dark
+              ? "border-white/10 bg-ink/60 backdrop-blur-xl backdrop-saturate-150"
+              : "border-stone/70 bg-cream/60 backdrop-blur-xl backdrop-saturate-150"
+            : "border-transparent bg-transparent",
       ].join(" ")}
     >
       <div className="container-df flex h-[72px] items-center gap-6">
         <Link
           href="/"
-          className="mr-auto text-[26px] font-extrabold tracking-[-0.04em] text-rust"
+          className="mr-auto text-[26px] font-extrabold tracking-[-0.04em] text-rust transition-transform duration-300 hover:scale-[1.03]"
         >
           {site.name}
         </Link>
@@ -64,40 +67,29 @@ export function SiteHeader({ variant = "light" }: { variant?: "light" | "dark" }
               href={item.href}
               aria-current={isActive(item.href) ? "page" : undefined}
               className={[
-                "relative text-[15px] transition-colors",
+                "group relative text-[15px] transition-colors duration-300",
                 isActive(item.href)
-                  ? "text-rust font-semibold"
+                  ? "font-semibold text-rust"
                   : dark
                     ? "text-white/75 hover:text-white"
                     : "text-ink/75 hover:text-ink",
               ].join(" ")}
             >
               {item.label}
-              {isActive(item.href) && (
-                <span className="absolute -bottom-1.5 left-0 h-[2px] w-full rounded bg-rust" />
-              )}
+              <span
+                aria-hidden="true"
+                className={[
+                  "absolute -bottom-1.5 left-0 h-[2px] rounded bg-rust transition-[width] duration-300 ease-out",
+                  isActive(item.href) ? "w-full" : "w-0 group-hover:w-full",
+                ].join(" ")}
+              />
             </Link>
           ))}
         </nav>
 
-        <a
-          href={site.facebook}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Decoforge on Facebook"
-          className={[
-            "hidden h-10 w-10 items-center justify-center rounded-lg border transition md:inline-flex",
-            dark ? "border-white/20 hover:bg-white/10" : "border-stone-2 hover:bg-stone/60",
-          ].join(" ")}
-        >
-          <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M11.5 18v-6h2l.4-2.6h-2.4V7.7c0-.75.2-1.26 1.28-1.26H14V4.12A17 17 0 0012.02 4C10.06 4 8.7 5.2 8.7 7.4v2H6.5V12h2.2v6z" fill="#1877F2" />
-          </svg>
-        </a>
-
         <Link
           href="/contact"
-          className="hidden rounded-lg bg-rust px-5 py-2.5 text-[15px] font-semibold text-white transition hover:bg-rust-2 md:inline-flex"
+          className="hidden rounded-lg bg-rust px-5 py-2.5 text-[15px] font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-rust-2 hover:shadow-[0_12px_26px_-12px_rgba(178,58,15,0.8)] md:inline-flex"
         >
           Get a Quote
         </Link>
@@ -147,19 +139,6 @@ export function SiteHeader({ variant = "light" }: { variant?: "light" | "dark" }
             >
               Get a Quote
             </Link>
-            <a
-              href={site.facebook}
-              target="_blank"
-              rel="noreferrer"
-              className={`mt-2 flex items-center justify-center gap-2.5 rounded-lg px-5 py-3.5 text-base font-semibold ${
-                dark ? "bg-white/10 text-white" : "bg-stone/60 text-ink"
-              }`}
-            >
-              <svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M11.5 18v-6h2l.4-2.6h-2.4V7.7c0-.75.2-1.26 1.28-1.26H14V4.12A17 17 0 0012.02 4C10.06 4 8.7 5.2 8.7 7.4v2H6.5V12h2.2v6z" fill="#1877F2" />
-              </svg>
-              Facebook
-            </a>
           </nav>
         </div>
       )}

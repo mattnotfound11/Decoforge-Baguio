@@ -67,7 +67,7 @@ export function Ranges() {
   return (
     <section id="services" className="bg-cream py-20 sm:py-24">
       <div className="container-df">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-2xl text-center" data-reveal>
           <h2 className="text-[clamp(1.9rem,4.4vw,2.9rem)] font-extrabold uppercase">
             Curated Material Excellence
           </h2>
@@ -79,11 +79,11 @@ export function Ranges() {
         </div>
 
         <div className="mt-14 grid gap-6 md:grid-cols-3">
-          {rangeCards.map((card) => (
+          {rangeCards.map((card, i) => (
+            <div key={card.title} data-reveal style={{ transitionDelay: `${i * 110}ms` }}>
             <Link
-              key={card.title}
               href={card.href}
-              className="group overflow-hidden rounded-card border border-stone bg-ink text-white transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_-30px_rgba(23,18,16,0.6)]"
+              className="group flex h-full flex-col overflow-hidden rounded-card border border-stone bg-ink text-white transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_-30px_rgba(23,18,16,0.6)]"
             >
               <div className="relative aspect-[16/11] overflow-hidden">
                 <MaterialArt
@@ -103,6 +103,7 @@ export function Ranges() {
                 </span>
               </div>
             </Link>
+            </div>
           ))}
         </div>
       </div>
@@ -117,7 +118,7 @@ export function QualityBand() {
     <section className="relative overflow-hidden bg-ink py-20 text-white sm:py-28">
       <div className="pinstripe absolute inset-0" aria-hidden="true" />
       <div className="container-df relative">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-3xl text-center" data-reveal>
           <h2 className="text-[clamp(1.9rem,4.6vw,3.1rem)] font-extrabold uppercase">
             Architectural quality,
             <br />
@@ -129,7 +130,7 @@ export function QualityBand() {
           </p>
         </div>
 
-        <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
           {[
             ["01", "Supply and install", "One team measures, supplies, and fits. Nothing is handed off midway."],
             ["02", "Priced before we start", "A written, itemised quotation you approve before any work begins."],
@@ -156,7 +157,7 @@ export function CatalogPreview() {
   return (
     <section className="bg-cream py-20 sm:py-24">
       <div className="container-df">
-        <div className="flex flex-wrap items-end justify-between gap-6">
+        <div className="flex flex-wrap items-end justify-between gap-6" data-reveal>
           <div>
             <h2 className="text-[clamp(1.9rem,4.4vw,2.9rem)] font-extrabold uppercase">
               Materials <span className="text-rust italic">Catalog</span>
@@ -179,8 +180,10 @@ export function CatalogPreview() {
         </div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((m) => (
-            <MaterialCard key={m.slug} material={m} />
+          {featured.map((m, i) => (
+            <div key={m.slug} data-reveal style={{ transitionDelay: `${i * 80}ms` }}>
+              <MaterialCard material={m} />
+            </div>
           ))}
         </div>
       </div>
@@ -208,7 +211,7 @@ export function Gallery() {
   return (
     <section className="bg-cream pb-24 pt-4">
       <div className="container-df">
-        <div className="text-center">
+        <div className="text-center" data-reveal>
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted">
             Installed across the Cordilleras
           </p>
@@ -221,6 +224,8 @@ export function Gallery() {
           {galleryShots.map((shot, i) => (
             <figure
               key={shot.id}
+              data-reveal="scale"
+              style={{ transitionDelay: `${i * 70}ms` }}
               /* Spans chosen so both the 2-col and 4-col grids tile exactly,
                  with no half-filled row at the bottom. */
               className={[
@@ -262,7 +267,7 @@ export function BookingBand({ children }: { children: React.ReactNode }) {
         className="object-cover opacity-[0.12]"
       />
       <div className="container-df relative grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-        <div className="lg:pt-6">
+        <div className="lg:pt-6" data-reveal="left">
           <h2 className="text-[clamp(1.9rem,4.4vw,2.9rem)] font-extrabold uppercase">
             Book a<br />
             <span className="text-rust-2">consultation.</span>
@@ -289,7 +294,7 @@ export function BookingBand({ children }: { children: React.ReactNode }) {
           </ul>
         </div>
 
-        <div>{children}</div>
+        <div data-reveal="right">{children}</div>
       </div>
     </section>
   );

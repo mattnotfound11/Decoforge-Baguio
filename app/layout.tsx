@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -41,6 +42,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-PH" className={jakarta.variable}>
+      <head>
+        {/* Without JS the reveal classes would leave the page blank. */}
+        <noscript>
+          <style>{`[data-reveal]{opacity:1 !important;transform:none !important}`}</style>
+        </noscript>
+      </head>
       <body className="antialiased">
         <a
           href="#main"
@@ -49,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         {children}
+        <ScrollReveal />
       </body>
     </html>
   );

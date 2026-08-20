@@ -27,14 +27,14 @@ export default async function CatalogPage({
         <div className="pinstripe-light absolute inset-0" aria-hidden="true" />
 
         <div className="container-df relative py-16 sm:py-20">
-          <h1 className="text-[clamp(2.75rem,8vw,4.6rem)] font-extrabold">Materials Catalog</h1>
-          <p className="mt-6 max-w-[58ch] text-[17px] leading-relaxed text-ink/75">
+          <h1 className="rise text-[clamp(2.75rem,8vw,4.6rem)] font-extrabold">Materials Catalog</h1>
+          <p className="rise mt-6 max-w-[58ch] text-[17px] leading-relaxed text-ink/75" style={{ animationDelay: "90ms" }}>
             Explore our curated selection of high-end architectural surfaces. Refined organic
             textures designed for modern spaces, priced per piece and checked against showroom
             stock in real time.
           </p>
 
-          <div className="mt-12">
+          <div className="rise mt-12" style={{ animationDelay: "180ms" }}>
             <CatalogBrowser materials={materials} initialCategory={initialCategory} />
           </div>
         </div>

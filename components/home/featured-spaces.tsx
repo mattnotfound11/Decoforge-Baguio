@@ -11,7 +11,7 @@ export function FeaturedSpaces() {
       <div className="pinstripe absolute inset-0" aria-hidden="true" />
 
       <div className="container-df relative">
-        <div className="flex flex-wrap items-end justify-between gap-6">
+        <div className="flex flex-wrap items-end justify-between gap-6" data-reveal>
           <h2 className="text-[clamp(1.9rem,4.4vw,2.9rem)] font-extrabold uppercase">
             Featured Spaces
           </h2>
@@ -26,7 +26,7 @@ export function FeaturedSpaces() {
           </Link>
         </div>
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-3">
+        <div className="mt-12 grid gap-5 lg:grid-cols-3" data-reveal>
           {/* Hero project spans two columns on desktop. */}
           <Link
             href="/projects"
