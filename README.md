@@ -47,11 +47,12 @@ the email address that owns the account — that is a Resend rule, not a bug her
 
 | Route | What it is |
 | --- | --- |
-| `/` | Hero, ranges, catalog preview, featured projects, booking, gallery |
+| `/` | Hero, ranges, room composer, sample book, process, catalog preview rail, featured projects, booking, gallery |
 | `/catalog` | Filterable, searchable catalog with live stock badges |
 | `/catalog/[slug]` | Product detail, specs, pairings, spec-sheet download |
 | `/projects` | Featured installations |
-| `/contact` | Contact details and the appointment booking form |
+| `/contact` | Contact details and the appointment booking form, prefilled from `?material=` or from a composed room (`?room=&quote=`) |
+| `/quote` | Printable quotation for a room from the composer (`?room=&d=`), valid 15 days, `noindex`. Not an official receipt |
 | `/landing` | Standalone campaign page for Facebook ad traffic — no nav, one CTA, `noindex` |
 | `/privacy`, `/terms`, `/sustainability`, `/careers` | Footer pages |
 
@@ -63,8 +64,9 @@ derived from `pricePhp / coverageSqft` at render time, so the two can never
 drift apart. There is no USD anywhere.
 
 **Content** lives in `lib/`. `materials.ts` is the catalog — adding a finish
-there puts it in the grid, gives it a product page, and generates its spec
-sheet, with no other edits. `projects.ts` and `site.ts` hold the projects and
+there puts it in the grid, gives it a product page, generates its spec
+sheet, and offers it in the room composer if it covers area, with no other
+edits. `projects.ts` and `site.ts` hold the projects and
 the brand facts (address, phone, hours) that appear in several places.
 
 **Material samples are drawn, not photographed.** `components/material-art.tsx`
@@ -81,11 +83,30 @@ that every badge on the page subscribes to, so ten cards make one request every
 real inventory system — set `INVENTORY_URL` and it already will.
 
 **Bookings** go to `POST /api/bookings`, which validates against
-`lib/booking.ts` (Manila-local dates, Sunday closed, five fixed slots, a 90-day
-window), logs the booking *before* attempting delivery so an email outage cannot
-lose a lead, then sends two messages through Resend: an alert to the team and a
-confirmation to the customer. There is a honeypot field and a per-instance rate
-limit of five submissions per ten minutes.
+`lib/booking.ts` (Manila-local dates, every day bookable, five fixed slots, a
+90-day window), logs the booking *before* attempting delivery so an email outage
+cannot lose a lead, then sends two messages through Resend: an alert to the team
+and a confirmation to the customer. There is a honeypot field and a per-instance
+rate limit of five submissions per ten minutes.
+
+**Room composer and quotation.** `components/home/room-composer.tsx` is a CSS
+3D room (no canvas or WebGL) whose wall, ceiling and floor take finishes from
+the catalog, with a live peso estimate. The maths is in `lib/room.ts`: area per
+surface, plus an 8% cutting allowance, rounded up to whole pieces. "View your
+quotation" opens `/quote?room=…`, which redirects to a canonical dated link
+(`&d=YYYY-MM-DD`, Manila time; a future, malformed or expired date becomes
+today) and prints a quotation from `lib/quote.ts`, valid 15 days. Its reference
+(`DFQ-YYMMDD-XXXXX`) is a hash of the room and date, so a link always shows the
+same number. "Book a free site measure" carries both to `/contact`, which
+prefills the form from the same `buildQuotation`, so all three figures agree.
+
+**Motion.** Lenis (`components/motion/smooth-scroll.tsx`) smooths wheel
+scrolling while driving the real document scroll, so anchors and scroll
+observers keep working; it is off under `prefers-reduced-motion`, and touch
+keeps native momentum. Pause scrolling through `lockScroll` in `lib/smooth.ts`.
+The intro loader plays only when a visit starts on `/`, once per browser
+session, never under reduced motion. An inline script in `app/layout.tsx`
+decides before first paint, with a 9-second failsafe that releases the page.
 
 ## Known limits
 
@@ -106,6 +127,14 @@ limit of five submissions per ten minutes.
 - **Project case studies are illustrative.** The three entries in
   `lib/projects.ts` and all room photography are stand-ins. Swap in real
   installations — the Facebook page has them.
+- **Quotations are not stored.** A quotation reference is derived from its link,
+  not saved server-side, and prices are not snapshotted: reopening a link
+  re-prices it from the current `lib/materials.ts`.
+- **The composer does not restore a room.** "Back to the room composer" from
+  `/quote` returns to the default room, not the one that was quoted.
+- **Booking logs have no room or quote fields.** A composer booking carries its
+  room and quotation reference only in the free-text details.
+- **There is no automated test suite.** `npm run lint` is the only check.
 
 ## Deploying
 
