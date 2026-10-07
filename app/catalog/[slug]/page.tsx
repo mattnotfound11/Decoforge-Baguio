@@ -60,7 +60,7 @@ export default async function MaterialPage({
     <>
       <SiteHeader />
       <main id="main" className="bg-cream">
-        <div className="container-df py-10 sm:py-14">
+        <div className="container-df pb-24 pt-10 sm:pt-14">
           <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-[14px] text-muted">
             <Link href="/catalog" className="hover:text-rust">Catalog</Link>
             <Chevron />
@@ -94,15 +94,15 @@ export default async function MaterialPage({
                 <StockBadge slug={material.slug} fallback={material.baselineStock} showCount />
               </div>
 
-              <h1 className="mt-5 text-[clamp(2rem,5vw,2.9rem)] font-extrabold">{material.name}</h1>
-              <p className="mt-1 text-[clamp(1.35rem,3.2vw,1.85rem)] font-extrabold text-rust">
-                {material.finish}
-              </p>
+              <h1 className="mt-5 font-display text-[clamp(2.6rem,5.6vw,4rem)] leading-[0.95] tracking-[-0.03em]">
+                {material.name}
+                <em className="mt-1 block text-rust">{material.finish}</em>
+              </h1>
 
-              <div className="mt-7 rounded-card bg-cream-2 p-6 sm:p-7">
+              <div className="mt-7 rounded-[1.6rem] bg-cream-2 p-6 ring-1 ring-ink/[0.05] sm:p-7">
                 <div className="flex flex-wrap items-baseline justify-between gap-3">
-                  <span className="text-[15px] text-muted">Estimated Price</span>
-                  <span className="text-[30px] font-extrabold tracking-[-0.02em]">
+                  <span className="text-[15px] text-muted">Estimated price</span>
+                  <span className="font-display text-[38px] leading-none">
                     {formatPeso(material.pricePhp)}
                     <span className="ml-1 text-[15px] font-medium text-muted">
                       / {material.unit}
@@ -121,9 +121,9 @@ export default async function MaterialPage({
 
                 <Link
                   href={`/contact?material=${material.slug}`}
-                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-rust px-7 py-4 text-[15px] font-bold text-white transition hover:bg-rust-2"
+                  className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-rust px-7 py-4 text-[15px] font-semibold text-white transition duration-300 hover:bg-rust-2 active:scale-[0.98]"
                 >
-                  Request a Quote
+                  Request a quote
                   <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                     <path d="M3 10h13M11 5l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -131,18 +131,18 @@ export default async function MaterialPage({
 
                 <a
                   href={`/api/specs/${material.slug}`}
-                  className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-ink/25 px-7 py-4 text-[15px] font-bold transition hover:border-ink hover:bg-ink hover:text-cream"
+                  className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-ink/25 px-7 py-4 text-[15px] font-semibold transition duration-300 hover:border-ink hover:bg-ink hover:text-cream active:scale-[0.98]"
                 >
                   <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                     <path d="M10 3v9m0 0l-3.5-3.5M10 12l3.5-3.5M4 15.5h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
-                  Download Specs &amp; CAD
+                  Download specs &amp; CAD
                 </a>
               </div>
 
-              <dl className="mt-7 grid grid-cols-2 gap-6">
+              <dl className="mt-7 grid gap-6 sm:grid-cols-2">
                 <Fact
-                  label="Lead Time"
+                  label="Lead time"
                   value={material.leadTime}
                   icon={
                     <path d="M2.5 6h11l2 4v4h-2M2.5 6v8h1m10 0H7m-4.5 0a1.75 1.75 0 103.5 0 1.75 1.75 0 10-3.5 0zm10 0a1.75 1.75 0 103.5 0 1.75 1.75 0 10-3.5 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -150,7 +150,7 @@ export default async function MaterialPage({
                 />
                 <Fact
                   label="Availability"
-                  value={`${material.baselineStock > 0 ? "In Stock" : "On order"} (Domestic)`}
+                  value={`${material.baselineStock > 0 ? "In stock" : "On order"} (domestic)`}
                   icon={
                     <>
                       <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -165,8 +165,8 @@ export default async function MaterialPage({
           <section className="mt-20 border-t border-stone-2 pt-14">
             <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-14">
               <div>
-                <h2 className="text-[clamp(1.5rem,3.2vw,2rem)] font-extrabold">
-                  Technical Specifications
+                <h2 className="font-display text-[clamp(2.2rem,4.4vw,3.2rem)] leading-none">
+                  Technical <em className="text-rust">specifications.</em>
                 </h2>
                 <p className="mt-4 text-[15px] leading-relaxed text-muted">
                   Engineered for stability and ease of use. The high-density core prevents warping
@@ -197,7 +197,7 @@ export default async function MaterialPage({
                 </div>
               </div>
 
-              <dl className="grid gap-x-8 gap-y-6 rounded-card bg-white p-7 sm:grid-cols-2 sm:p-9">
+              <dl className="grid gap-x-8 gap-y-6 rounded-[1.6rem] bg-white p-7 ring-1 ring-ink/[0.05] sm:grid-cols-2 sm:p-9">
                 {specRows.map(([label, value]) => (
                   <div key={label}>
                     <dt className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
@@ -212,12 +212,12 @@ export default async function MaterialPage({
 
           <section className="mt-20">
             <div className="flex flex-wrap items-end justify-between gap-4">
-              <h2 className="text-[clamp(1.5rem,3.2vw,2rem)] font-extrabold">Suggested Pairings</h2>
+              <h2 className="font-display text-[clamp(2.2rem,4.4vw,3.2rem)] leading-none">Suggested <em className="text-rust">pairings.</em></h2>
               <Link
                 href="/catalog"
                 className="inline-flex items-center gap-2 text-[14px] font-semibold text-rust transition hover:gap-3"
               >
-                View Full System
+                View full system
                 <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                   <path d="M3 10h13M11 5l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>

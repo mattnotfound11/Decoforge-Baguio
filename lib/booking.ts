@@ -54,6 +54,7 @@ const clean = (value: unknown, max: number) =>
  * The Facebook page lists Decoforge as always open, so every day is bookable.
  * Kept as a function so a future closed day is a one-line change.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature kept for future closed days
 export const isClosedDay = (_iso: string) => false;
 
 export function todayInManila(): string {

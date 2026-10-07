@@ -59,15 +59,16 @@ export function useStock() {
 
 /** "just now" / "2m ago" — shown next to the live availability readout. */
 export function useAgo(iso: string | undefined) {
-  const [, tick] = useState(0);
+  // The clock lives in state, so rendering stays pure; it ticks every 10s.
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    const id = setInterval(() => tick((n) => n + 1), 10_000);
+    const id = setInterval(() => setNow(Date.now()), 10_000);
     return () => clearInterval(id);
   }, []);
 
   if (!iso) return "";
-  const seconds = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+  const seconds = Math.max(0, Math.round((now - new Date(iso).getTime()) / 1000));
   if (seconds < 20) return "just now";
   if (seconds < 60) return `${seconds}s ago`;
   const minutes = Math.round(seconds / 60);

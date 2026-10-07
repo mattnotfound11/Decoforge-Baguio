@@ -35,7 +35,7 @@ const shell = (heading: string, intro: string, rows: [string, string][], footer:
           .map(
             ([k, v]) => `<tr>
               <td style="padding:9px 0;color:#6f645c;width:38%;vertical-align:top">${esc(k)}</td>
-              <td style="padding:9px 0;font-weight:600;vertical-align:top">${esc(v)}</td>
+              <td style="padding:9px 0;font-weight:600;vertical-align:top;white-space:pre-wrap">${esc(v)}</td>
             </tr>`,
           )
           .join("")}

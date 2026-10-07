@@ -35,9 +35,12 @@ export interface Prefill {
 
 export function BookingForm({
   compact = false,
+  heading = true,
   prefill,
 }: {
   compact?: boolean;
+  /** Off where the surrounding section already titles the form, so it isn't said twice. */
+  heading?: boolean;
   prefill?: Prefill;
 }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -84,14 +87,14 @@ export function BookingForm({
 
   if (done) {
     return (
-      <div className="rounded-2xl bg-white p-8 text-center text-ink shadow-[0_20px_60px_-24px_rgba(23,18,16,0.5)] sm:p-10">
+      <div className="rounded-[1.5rem] bg-white p-8 text-center text-ink shadow-[0_20px_60px_-24px_rgba(23,18,16,0.5)] sm:p-10">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-rust/10">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M4 12.5l5.2 5L20 7" stroke="#b23a0f" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
 
-        <h3 className="mt-5 text-2xl font-extrabold tracking-[-0.02em]">Appointment requested</h3>
+        <h3 className="mt-5 font-display text-[34px] leading-none">Appointment requested</h3>
         <p className="mt-2 text-[15px] leading-relaxed text-muted">
           {done.appointmentType} on <strong className="text-ink">{prettyDate(done.date)}</strong> at{" "}
           <strong className="text-ink">{slotLabel(done.time)}</strong>.
@@ -122,12 +125,17 @@ export function BookingForm({
     <form
       onSubmit={onSubmit}
       noValidate
-      className="rounded-2xl bg-white p-6 text-ink shadow-[0_20px_60px_-24px_rgba(23,18,16,0.5)] sm:p-8 lg:p-10"
+      aria-label="Book a consultation"
+      className="rounded-[1.5rem] bg-white p-6 text-ink shadow-[0_20px_60px_-24px_rgba(23,18,16,0.5)] sm:p-8 lg:p-10"
     >
-      <h3 className="text-[28px] font-extrabold tracking-[-0.03em] sm:text-[32px]">Book a Consultation</h3>
-      <p className="mt-2 text-[15px] leading-relaxed text-muted">
-        Tell us about your project and we&rsquo;ll confirm your slot by email within one business day.
-      </p>
+      {heading && (
+        <>
+          <h3 className="font-display text-[clamp(2rem,3.4vw,2.6rem)] leading-none tracking-[-0.02em]">Book a consultation</h3>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted">
+            Tell us about your project and we&rsquo;ll confirm your slot by email within one business day.
+          </p>
+        </>
+      )}
 
       {prefill?.subject && (
         <p className="mt-4 inline-flex items-center gap-2 rounded-lg bg-cream-2 px-4 py-2.5 text-[14px]">
@@ -226,7 +234,7 @@ export function BookingForm({
         disabled={busy}
         className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-rust px-7 py-4 text-[15px] font-bold text-white transition hover:bg-rust-2 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
-        {busy ? "Sending…" : "Submit Inquiry"}
+        {busy ? "Sending…" : "Submit inquiry"}
         {!busy && (
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
             <path d="M3 10h13M11 5l5 5-5 5" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />

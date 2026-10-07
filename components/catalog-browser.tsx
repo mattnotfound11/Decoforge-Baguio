@@ -37,7 +37,7 @@ export function CatalogBrowser({
 
   return (
     <div>
-      <div className="rounded-2xl bg-cream-2/70 p-4 sm:p-5">
+      <div className="rounded-[1.6rem] bg-cream-2/80 p-4 ring-1 ring-ink/[0.05] sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
           <div role="group" aria-label="Filter by category" className="flex flex-wrap gap-2">
             {categories.map((c) => {
@@ -52,7 +52,7 @@ export function CatalogBrowser({
                     setShown(PAGE);
                   }}
                   className={[
-                    "rounded-full px-5 py-2.5 text-[14px] font-semibold transition",
+                    "rounded-full px-4 py-2.5 text-[14px] font-semibold transition duration-300 active:scale-[0.97] sm:px-5",
                     active
                       ? "bg-rust text-white"
                       : "bg-white text-ink/75 ring-1 ring-stone hover:ring-rust/40",
@@ -128,11 +128,15 @@ export function CatalogBrowser({
           </button>
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map((m) => (
-            <MaterialCard key={m.slug} material={m} />
-          ))}
-        </div>
+        <>
+          {/* Outline: page h1 → this h2 → each card's h3. */}
+          <h2 className="sr-only">Materials</h2>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {visible.map((m) => (
+              <MaterialCard key={m.slug} material={m} />
+            ))}
+          </div>
+        </>
       )}
 
       {shown < results.length && (
@@ -140,9 +144,9 @@ export function CatalogBrowser({
           <button
             type="button"
             onClick={() => setShown((n) => n + PAGE)}
-            className="rounded-lg border border-ink/20 px-7 py-3.5 text-[15px] font-semibold transition hover:border-ink hover:bg-ink hover:text-cream"
+            className="rounded-full border border-ink/20 px-7 py-3.5 text-[15px] font-semibold transition duration-300 hover:border-ink hover:bg-ink hover:text-cream active:scale-[0.97]"
           >
-            Load More Materials
+            Load more materials
           </button>
         </div>
       )}

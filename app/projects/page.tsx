@@ -21,9 +21,10 @@ export default function ProjectsPage() {
       <main id="main" className="relative overflow-hidden bg-cream">
         <div className="pinstripe-light absolute inset-0" aria-hidden="true" />
 
-        <div className="container-df relative py-16 sm:py-20">
-          <h1 className="rise max-w-[14ch] text-[clamp(2.75rem,8vw,4.6rem)] font-extrabold text-rust">
-            Featured Projects
+        <div className="container-df relative pb-24 pt-14 sm:pt-20">
+          <p className="rise eyebrow">Installed across the Cordilleras</p>
+          <h1 className="rise mt-5 font-display text-[clamp(3rem,8vw,5.6rem)] leading-[0.95] tracking-[-0.03em]" style={{ animationDelay: "60ms" }}>
+            Featured <em className="text-rust">projects.</em>
           </h1>
           <p className="rise mt-6 max-w-[62ch] text-[17px] leading-relaxed text-ink/75" style={{ animationDelay: "90ms" }}>
             A curated selection of our premium installations across Baguio. Explore how Decoforge
@@ -44,12 +45,12 @@ export default function ProjectsPage() {
                 />
               </div>
 
-              <div className="mx-4 -mt-14 rounded-card bg-white p-6 shadow-[0_24px_60px_-32px_rgba(23,18,16,0.5)] sm:mx-8 sm:p-7">
+              <div className="relative z-[1] mx-4 -mt-14 rounded-card bg-white p-6 shadow-[0_24px_60px_-32px_rgba(23,18,16,0.5)] sm:mx-8 sm:p-7">
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <h2 className="text-[26px] font-extrabold tracking-[-0.02em] sm:text-[30px]">
+                  <h2 className="font-display text-[32px] leading-none sm:text-[40px]">
                     {alpine.name}
                   </h2>
-                  <span className="rounded-full bg-rust px-3.5 py-1.5 text-[12px] font-bold text-white">
+                  <span className="shrink-0 rounded-full bg-rust px-3.5 py-1.5 text-[12px] font-bold text-white">
                     {alpine.kind}
                   </span>
                 </div>
@@ -80,7 +81,7 @@ export default function ProjectsPage() {
               </div>
 
               <div className="flex flex-1 flex-col p-6">
-                <h2 className="text-[24px] font-extrabold tracking-[-0.02em]">{villa.name}</h2>
+                <h2 className="font-display text-[32px] leading-none">{villa.name}</h2>
                 <Meta location={villa.location} area={villa.area} dotted />
                 <p className="mt-4 text-[15px] leading-relaxed text-ink/75">{villa.blurb}</p>
 
@@ -100,7 +101,7 @@ export default function ProjectsPage() {
               <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-rust">
                 {studio.kindLabel}
               </p>
-              <h2 className="mt-2 text-[28px] font-extrabold tracking-[-0.02em] sm:text-[32px]">
+              <h2 className="mt-3 font-display text-[34px] leading-none sm:text-[42px]">
                 {studio.name}
               </h2>
               <Meta location={studio.location} area={studio.area} />
@@ -108,9 +109,9 @@ export default function ProjectsPage() {
 
               <Link
                 href="/contact"
-                className="mt-7 inline-flex items-center gap-2 rounded-lg border border-ink/25 px-6 py-3.5 text-[15px] font-semibold transition hover:border-ink hover:bg-ink hover:text-cream"
+                className="mt-7 inline-flex items-center gap-2 rounded-full border border-ink/25 px-6 py-3.5 text-[15px] font-semibold transition duration-300 hover:border-ink hover:bg-ink hover:text-cream active:scale-[0.97]"
               >
-                View Case Study
+                Discuss a similar space
               </Link>
             </div>
 
@@ -125,17 +126,18 @@ export default function ProjectsPage() {
             </div>
           </article>
 
-          <div className="mt-16 rounded-card bg-ink px-7 py-12 text-center text-white sm:px-10" data-reveal="scale">
-            <h2 className="text-[clamp(1.6rem,3.6vw,2.3rem)] font-extrabold uppercase">
-              Have a space in mind?
+          <div className="relative mt-16 overflow-hidden rounded-[2rem] bg-ink px-7 py-16 text-center text-white sm:px-10" data-reveal="scale">
+            <div className="pinstripe absolute inset-0" aria-hidden="true" />
+            <h2 className="relative font-display text-[clamp(2.2rem,5vw,3.6rem)] leading-none">
+              Have a space <em className="text-ember">in mind?</em>
             </h2>
-            <p className="mx-auto mt-3 max-w-[52ch] text-[15px] leading-relaxed text-white/65">
+            <p className="relative mx-auto mt-4 max-w-[52ch] text-[15px] leading-relaxed text-white/65">
               Book a site visit and we will measure, photograph, and quote from the actual room —
               usually within two business days.
             </p>
             <Link
               href="/contact"
-              className="mt-7 inline-flex rounded-lg bg-rust px-7 py-4 text-[15px] font-bold transition hover:bg-rust-2"
+              className="relative mt-8 inline-flex rounded-full bg-rust px-8 py-4 text-[15px] font-semibold transition duration-300 hover:bg-rust-2 active:scale-[0.97]"
             >
               Book a consultation
             </Link>

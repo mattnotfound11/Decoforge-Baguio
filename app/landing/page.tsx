@@ -38,8 +38,8 @@ export default function LandingPage() {
       {/* Deliberately no nav: a campaign page has one job. */}
       <header className="border-b border-white/10 bg-ink">
         <div className="container-df flex h-[68px] items-center gap-4">
-          <Link href="/" className="mr-auto text-[24px] font-extrabold tracking-[-0.04em] text-rust-2">
-            {site.name}
+          <Link href="/" className="mr-auto font-display text-[28px] leading-none text-white" aria-label={`${site.name} — home`}>
+            Deco<em className="text-ember">forge</em>
           </Link>
           <a
             href={site.phoneHref}
@@ -83,10 +83,10 @@ export default function LandingPage() {
                 Irisan, Baguio City · Open daily
               </span>
 
-              <h1 className="rise mt-6 text-[clamp(2.4rem,6.6vw,4.2rem)] font-extrabold uppercase" style={{ animationDelay: "80ms" }}>
+              <h1 className="rise mt-6 font-display text-[clamp(3rem,8vw,5.4rem)] leading-[0.95] tracking-[-0.03em]" style={{ animationDelay: "80ms" }}>
                 Affordable, premium
                 <br />
-                <span className="text-rust-2">home decor finishes.</span>
+                <em className="text-ember">home decor finishes.</em>
               </h1>
 
               <p className="rise mt-6 max-w-[52ch] text-[17px] leading-relaxed text-white/75" style={{ animationDelay: "170ms" }}>
@@ -99,7 +99,7 @@ export default function LandingPage() {
               <div className="rise mt-9 flex flex-wrap gap-3" style={{ animationDelay: "260ms" }}>
                 <a
                   href="#book"
-                  className="inline-flex items-center justify-center rounded-lg bg-rust px-8 py-4 text-[16px] font-bold transition hover:bg-rust-2"
+                  className="inline-flex items-center justify-center rounded-full bg-rust px-8 py-4 text-[16px] font-semibold transition duration-300 hover:bg-rust-2 active:scale-[0.97]"
                 >
                   Get a free quote
                 </a>
@@ -107,7 +107,7 @@ export default function LandingPage() {
                   href={site.messenger}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2.5 rounded-lg bg-[#1877F2] px-8 py-4 text-[16px] font-bold transition hover:bg-[#0f6ae0]"
+                  className="inline-flex items-center justify-center gap-2.5 rounded-full bg-[#1877F2] px-8 py-4 text-[16px] font-semibold transition duration-300 hover:bg-[#0f6ae0] active:scale-[0.97]"
                 >
                   <FacebookIcon fill="#fff" />
                   Message us
@@ -132,8 +132,8 @@ export default function LandingPage() {
         <section className="py-16 sm:py-20">
           <div className="container-df">
             <div className="mx-auto max-w-2xl text-center" data-reveal>
-              <h2 className="text-[clamp(1.8rem,4.2vw,2.6rem)] font-extrabold uppercase">
-                What we supply and install
+              <h2 className="font-display text-[clamp(2.4rem,5vw,3.6rem)] leading-none">
+                What we supply <em className="text-rust">and install</em>
               </h2>
               <p className="mt-4 text-[16px] leading-relaxed text-muted">
                 Every price below is per piece, in Philippine pesos, from our Irisan stock.
@@ -196,8 +196,8 @@ export default function LandingPage() {
         {/* ------------------------------------------------------- steps -- */}
         <section className="bg-cream-2 py-16 sm:py-20">
           <div className="container-df">
-            <h2 className="text-center text-[clamp(1.8rem,4.2vw,2.6rem)] font-extrabold uppercase" data-reveal>
-              Three steps, no surprises
+            <h2 className="text-center font-display text-[clamp(2.4rem,5vw,3.6rem)] leading-none" data-reveal>
+              Three steps, <em className="text-rust">no surprises</em>
             </h2>
 
             <div className="mt-12 grid gap-8 md:grid-cols-3" data-reveal>
@@ -223,10 +223,10 @@ export default function LandingPage() {
           <div className="pinstripe absolute inset-0" aria-hidden="true" />
           <div className="container-df relative grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
             <div>
-              <h2 className="text-[clamp(1.8rem,4.2vw,2.6rem)] font-extrabold uppercase">
+              <h2 className="font-display text-[clamp(2.6rem,5.4vw,4rem)] leading-[0.95]">
                 Book a free
                 <br />
-                <span className="text-rust-2">quotation.</span>
+                <em className="text-ember">quotation.</em>
               </h2>
               <p className="mt-5 max-w-[42ch] text-[16px] leading-relaxed text-white/70">
                 Pick a time that suits you and we will confirm by email. No charge for the visit or
@@ -262,7 +262,7 @@ export default function LandingPage() {
             </div>
 
             <div data-reveal="right">
-              <BookingForm />
+              <BookingForm heading={false} />
             </div>
           </div>
         </section>
@@ -271,7 +271,7 @@ export default function LandingPage() {
       <footer className="bg-ink py-10 text-white/60">
         <div className="container-df flex flex-wrap items-center justify-between gap-6">
           <p className="text-[14px]">
-            © 2024 {site.legalName}. {site.showroom.line1}, {site.showroom.line2}.
+            © {new Date().getFullYear()} {site.legalName}. {site.showroom.line1}, {site.showroom.line2}.
           </p>
           <div className="flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
             <Link href="/" className="hover:text-rust-2">Main site</Link>

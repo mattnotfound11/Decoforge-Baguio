@@ -6,7 +6,7 @@ import { formatPeso } from "@/lib/format";
 
 export function MaterialCard({ material }: { material: Material }) {
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-card border border-stone bg-white transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(23,18,16,0.45)]">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-card border border-stone bg-white transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-28px_rgba(23,18,16,0.45)]">
       <div className="relative aspect-[5/4] overflow-hidden bg-cream-2">
         <MaterialArt
           surface={material.surface}
@@ -36,25 +36,31 @@ export function MaterialCard({ material }: { material: Material }) {
           </Link>
         </h3>
 
-        {/* Ranges like UV Marble share one name, so the finish has to show. */}
-        {!material.name.toLowerCase().includes(material.finish.toLowerCase()) && (
+        {/* Ranges like UV Marble share one name, so the finish has to show. When
+            the name already says it, the line is kept (invisibly) so every card
+            in a row lines up. */}
+        {material.name.toLowerCase().includes(material.finish.toLowerCase()) ? (
+          <p className="invisible text-[15px] font-bold" aria-hidden="true">&nbsp;</p>
+        ) : (
           <p className="text-[15px] font-bold text-rust">{material.finish}</p>
         )}
 
-        <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-muted">{material.summary}</p>
+        {/* Two lines reserved, so one-line summaries don't pull the price up. */}
+        <p className="mt-2 line-clamp-2 min-h-[2lh] text-[14px] leading-relaxed text-muted">{material.summary}</p>
 
-        <div className="mt-5 flex items-end justify-between gap-3 pt-1">
-          <p className="text-[22px] font-extrabold tracking-[-0.02em]">
+        {/* One line at every card width, so the CTA row lines up across a row of cards. */}
+        <div className="mt-auto flex items-baseline justify-between gap-2 pt-6">
+          <p className="whitespace-nowrap text-[20px] font-extrabold tracking-[-0.02em]">
             {formatPeso(material.pricePhp)}
-            <span className="ml-1 text-[14px] font-medium text-muted">/{material.unit}</span>
+            <span className="ml-0.5 text-[13px] font-medium text-muted">/{material.unit}</span>
           </p>
 
           <Link
             href={`/contact?material=${material.slug}`}
-            className="relative z-10 inline-flex items-center gap-1.5 text-[14px] font-semibold text-rust transition hover:gap-2.5"
+            className="relative z-10 inline-flex items-center gap-1 whitespace-nowrap text-[13.5px] font-semibold text-rust transition-[gap] hover:gap-2"
           >
-            Request a Quote
-            <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            Request a quote
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="shrink-0">
               <path d="M3 10h13M11 5l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Link>

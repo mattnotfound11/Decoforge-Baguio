@@ -33,7 +33,7 @@ export function StockBadge({
 
   const onHand = level?.onHand ?? fallback;
   const status = level?.status ?? statusFor(fallback);
-  const label = level?.label ?? (status === "in-stock" ? "In Stock" : status === "low-stock" ? "Low Stock" : "Out of Stock");
+  const label = level?.label ?? (status === "in-stock" ? "In stock" : status === "low-stock" ? "Low stock" : "Out of stock");
 
   return (
     <span

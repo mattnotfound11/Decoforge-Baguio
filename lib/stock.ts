@@ -33,9 +33,9 @@ export function statusFor(onHand: number): StockStatus {
 }
 
 const LABEL: Record<StockStatus, string> = {
-  "in-stock": "In Stock",
-  "low-stock": "Low Stock",
-  "out-of-stock": "Out of Stock",
+  "in-stock": "In stock",
+  "low-stock": "Low stock",
+  "out-of-stock": "Out of stock",
 };
 
 const toLevel = (slug: string, onHand: number): StockLevel => {

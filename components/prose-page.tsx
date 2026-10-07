@@ -24,15 +24,16 @@ export function ProsePage({
       <main id="main" className="relative overflow-hidden bg-cream">
         <div className="pinstripe-light absolute inset-0" aria-hidden="true" />
 
-        <div className="container-df relative py-16 sm:py-20">
+        <div className="container-df relative pb-24 pt-14 sm:pt-20">
           <div className="max-w-[68ch]">
-            <h1 className="text-[clamp(2.4rem,6.4vw,3.8rem)] font-extrabold">{title}</h1>
+            <p className="rise eyebrow">Decoforge Home &amp; Aesthetics</p>
+            <h1 className="rise mt-5 font-display text-[clamp(3rem,8vw,5.6rem)] leading-[0.95] tracking-[-0.03em]" style={{ animationDelay: "60ms" }}>{title}</h1>
             <p className="mt-5 text-[17px] leading-relaxed text-ink/75">{intro}</p>
             <p className="mt-3 text-[14px] text-muted">Last updated {updated}</p>
           </div>
 
           <div className="mt-14 grid gap-10 lg:grid-cols-[220px_1fr] lg:gap-16">
-            <nav aria-label="On this page" className="lg:sticky lg:top-24 lg:self-start">
+            <nav aria-label="On this page" className="lg:sticky lg:top-28 lg:self-start">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted">
                 On this page
               </p>
@@ -53,7 +54,7 @@ export function ProsePage({
             <div className="max-w-[70ch]">
               {sections.map((s) => (
                 <section key={s.heading} id={slug(s.heading)} className="scroll-mt-28 border-t border-stone-2 py-9 first:border-t-0 first:pt-0">
-                  <h2 className="text-[22px] font-extrabold tracking-[-0.02em]">{s.heading}</h2>
+                  <h2 className="font-display text-[30px] leading-tight">{s.heading}</h2>
                   {s.body.map((p, i) => (
                     <p key={i} className="mt-4 text-[15px] leading-relaxed text-ink/75">
                       {p}

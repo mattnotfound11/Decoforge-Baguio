@@ -37,10 +37,11 @@ export const site = {
 } as const;
 
 export const primaryNav = [
-  { label: "Services", href: "/#services" },
+  { label: "Ranges", href: "/#services" },
+  { label: "Room composer", href: "/#composer" },
+  { label: "Sample book", href: "/#sample-book" },
   { label: "Projects", href: "/projects" },
   { label: "Catalog", href: "/catalog" },
-  { label: "Contact", href: "/contact" },
 ] as const;
 
 export const footerNav = [

@@ -7,6 +7,16 @@ const peso = new Intl.NumberFormat("en-PH", {
 /** ₱1,200 — every price on the site is quoted in Philippine pesos. */
 export const formatPeso = (amount: number) => peso.format(amount);
 
+const pesoExact = new Intl.NumberFormat("en-PH", {
+  style: "currency",
+  currency: "PHP",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/** ₱18,250.00 — centavos shown, for documents such as the quotation. */
+export const formatPesoExact = (amount: number) => pesoExact.format(amount);
+
 /** ₱62 — rounded to the nearest peso for per-square-foot rates. */
 export const formatPesoRate = (amount: number) => peso.format(Math.round(amount));
 

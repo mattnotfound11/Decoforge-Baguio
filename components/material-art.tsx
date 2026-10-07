@@ -1,3 +1,4 @@
+import { memo, useId } from "react";
 import type { Surface, Tone } from "@/lib/materials";
 
 /**
@@ -39,11 +40,16 @@ interface Props {
   className?: string;
 }
 
-export function MaterialArt({ surface, tone, className }: Props) {
+/**
+ * Memoised: its props are three strings, and the composer and loupe re-render
+ * many tiles per slider step or drag without changing them.
+ */
+export const MaterialArt = memo(function MaterialArt({ surface, tone, className }: Props) {
   const c = TONES[tone];
-  // Stable per finish+surface. Identical combinations share identical defs,
-  // so a repeat on the same page is harmless.
-  const uid = `${surface}-${tone}`;
+  // Unique per drawing. Shared ids would make every copy paint from the first
+  // copy's <defs>, and when that copy sits in a display:none subtree (a swatch
+  // hidden on phones) browsers draw the gradients as nothing.
+  const uid = `${surface}-${tone}-${useId().replace(/:/g, "")}`;
 
   return (
     <svg
@@ -97,7 +103,7 @@ export function MaterialArt({ surface, tone, className }: Props) {
       <rect width="400" height="300" fill={`url(#sheen-${uid})`} />
     </svg>
   );
-}
+});
 
 /** Vertical ribs. The gradient across each rib is what reads as a rounded profile. */
 function Fluted({ uid, ramp }: { uid: string; ramp: Ramp }) {
