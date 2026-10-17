@@ -1,5 +1,5 @@
 import { todayInManila } from "./booking";
-import { estimate, surfaceArea, SURFACES, SQFT_PER_M2, type RoomPlan } from "./room";
+import { estimate, surfaceArea, surfaceLabel, SURFACES, SQFT_PER_M2, type RoomPlan } from "./room";
 import type { Material } from "./materials";
 
 /**
@@ -100,11 +100,11 @@ export function buildQuotation(plan: RoomPlan, roomCode: string, issued: string)
   for (const s of SURFACES) {
     const m = plan.picks[s.id];
     if (!m) continue;
-    const areaM2 = surfaceArea(s.id, plan);
+    const areaM2 = surfaceArea(s.id, plan, plan.walls);
     const e = estimate(m, areaM2);
     lines.push({
       n: lines.length + 1,
-      surface: s.label,
+      surface: surfaceLabel(s.id, plan.walls),
       material: m,
       areaM2,
       areaSqft: areaM2 * SQFT_PER_M2,

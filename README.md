@@ -47,7 +47,7 @@ the email address that owns the account — that is a Resend rule, not a bug her
 
 | Route | What it is |
 | --- | --- |
-| `/` | Hero, ranges, room composer, sample book, process, catalog preview rail, featured projects, booking, gallery |
+| `/` | Hero, ranges, room composer, process, catalog preview rail, featured projects, booking, gallery |
 | `/catalog` | Filterable, searchable catalog with live stock badges |
 | `/catalog/[slug]` | Product detail, specs, pairings, spec-sheet download |
 | `/projects` | Featured installations |
@@ -74,7 +74,10 @@ renders each finish as an SVG — vertical ribs for fluted panels, grooved board
 for decking, bevelled seams for ceilings — from a four-stop colour ramp per
 finish. Stock photography of ribbed panels varies too much in crop and lighting
 to sit in a grid together, and these stay crisp at any size with no image
-weight. Room photography is real, from Unsplash.
+weight. The 3D room composer draws the same finishes again as PBR textures
+(`lib/material-textures.ts`, from the same `TONES` ramps). To add a finish, extend
+`TONES` and `materials` in `lib/materials.ts`. Room photography is real, from
+Unsplash.
 
 **Stock availability** is polled, not baked in. `/api/stock` is
 `force-dynamic` and `no-store`; `lib/use-stock.ts` holds one module-level poller
@@ -89,9 +92,37 @@ cannot lose a lead, then sends two messages through Resend: an alert to the team
 and a confirmation to the customer. There is a honeypot field and a per-instance
 rate limit of five submissions per ten minutes.
 
-**Room composer and quotation.** `components/home/room-composer.tsx` is a CSS
-3D room (no canvas or WebGL) whose wall, ceiling and floor take finishes from
-the catalog, with a live peso estimate. The maths is in `lib/room.ts`: area per
+**Room composer and quotation.** `components/home/room-composer.tsx` shows a
+true-scale 3D model of the room beside a live peso estimate. Three surfaces take
+finishes from the catalog: walls, ceiling and floor. A wall finish covers the
+feature wall, the window wall and the side wall together, measured less the
+window opening.
+
+The model lives in `lib/room-stage.ts`, which is plain three.js with no React:
+- PBR materials with procedural colour and normal maps;
+- image-based lighting, a sun through the window with real shadows, a linear
+  cove that grazes the feature wall, and a pendant spotlight;
+- Khronos PBR Neutral tone mapping, so a finish keeps its catalog colour.
+
+The stage also:
+- has Eye level, Corner and Overhead views, a Day/Evening light switch, and
+  full screen;
+- orbits by dragging, or by a sideways swipe on touch screens;
+- zooms toward the cursor or the pinch point, by Ctrl + wheel (a trackpad
+  pinch), a touch pinch, or the +/- buttons. A plain wheel still scrolls the page.
+- cuts away any wall the camera stands behind, as a section drawing does;
+- renders only when something changes.
+
+`components/home/room-scene.tsx` imports the stage only when the composer nears
+the viewport, so three.js (about 260 KB gzipped) stays off the critical path.
+Without WebGL, a flat elevation of the wall takes its place. The key plan beside
+the model reads the same window position from `windowIn` in `lib/room.ts`.
+
+Room codes are `wall~ceiling~floor~W~D~H~3w`. The `3w` marks a wall finish
+that covers all three walls. Older links, without the marker, still price the
+feature wall alone, so a quotation already sent out keeps its figures.
+
+The maths is in `lib/room.ts`: area per
 surface, plus an 8% cutting allowance, rounded up to whole pieces. "View your
 quotation" opens `/quote?room=…`, which redirects to a canonical dated link
 (`&d=YYYY-MM-DD`, Manila time; a future, malformed or expired date becomes

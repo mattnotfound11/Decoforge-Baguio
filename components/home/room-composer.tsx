@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { MaterialArt } from "@/components/material-art";
+import { RoomScene, type SceneApi } from "@/components/home/room-scene";
 import { formatPeso } from "@/lib/format";
-import { getMaterial, type Material, type Surface } from "@/lib/materials";
-import { getLenis } from "@/lib/smooth";
+import { getMaterial, type Material } from "@/lib/materials";
 import {
   encodeRoom,
   estimate,
@@ -14,26 +14,20 @@ import {
   surfaceArea,
   SURFACES,
   WASTE,
+  windowIn,
   type Dims,
   type SurfaceId,
 } from "@/lib/room";
+import type { Mood, View } from "@/lib/room-stage";
 
 /**
- * Room composer: a real CSS 3D room whose wall, ceiling and floor take any
- * finish from the catalog, at true scale, with a live peso estimate beside it.
+ * Room composer: a physically lit 3D model of the room whose feature wall,
+ * ceiling and floor take any finish from the catalog at true scale, with a
+ * key plan, and a live peso estimate beside it.
  *
- * The room is built from six transformed planes around a zero-size origin, so
- * the browser does the perspective — no canvas, no WebGL, and every sample is
- * the same SVG the catalog draws.
+ * The WebGL stage (lib/room-stage.ts) loads on demand; everything else here,
+ * including the estimate and the quotation link, works without it.
  */
-
-/** Real-world size, in metres, of one MaterialArt tile for each surface type. */
-const TILE_M: Record<Surface, [number, number]> = {
-  marble: [1.22, 2.44], // one full 8 × 4 ft sheet
-  fluted: [1.0, 0.75],
-  ceiling: [1.2, 0.9],
-  deck: [1.13, 0.85],
-};
 
 const DEFAULT_PICKS: Record<SurfaceId, string | null> = {
   wall: "mahogany-fluted-panel",
@@ -41,103 +35,51 @@ const DEFAULT_PICKS: Record<SurfaceId, string | null> = {
   floor: "cedar-composite",
 };
 
-/** Largest room, in px, before the stage scales it to fit. */
-const BOX = { w: 600, h: 380, d: 600 };
-/** Stage size the room is composed for; larger or smaller stages scale it (capped at 1.25×). */
-const STAGE = { w: 680, h: 400, maxScale: 1.25 };
+const onFullscreenChange = (notify: () => void) => {
+  document.addEventListener("fullscreenchange", notify);
+  return () => document.removeEventListener("fullscreenchange", notify);
+};
+
+const VIEWS: { id: View; label: string; short: string }[] = [
+  { id: "eye", label: "Eye level", short: "Eye" },
+  { id: "corner", label: "Corner", short: "Corner" },
+  { id: "overhead", label: "Overhead", short: "Above" },
+];
 
 export function RoomComposer() {
   const [picks, setPicks] = useState(DEFAULT_PICKS);
   const [dims, setDims] = useState<Dims>({ width: 4.2, depth: 5, height: 2.7 });
   const [tab, setTab] = useState<SurfaceId>("wall");
+  const [mood, setMood] = useState<Mood>("day");
+  const [view, setView] = useState({ id: "corner" as View, nonce: 0 });
+  const [heading, setHeading] = useState(0);
+  const [flat, setFlat] = useState(false);
+  const [hover, setHover] = useState<{ surface: SurfaceId; x: number; y: number } | null>(null);
+  const [zoomHint, setZoomHint] = useState(false);
+  const scene = useRef<SceneApi | null>(null);
+  const stageEl = useRef<HTMLDivElement>(null);
 
-  const stageRef = useRef<HTMLDivElement>(null);
-  const roomRef = useRef<HTMLDivElement>(null);
-  const [fit, setFit] = useState(1);
+  const chosen = useMemo(
+    () => Object.fromEntries(SURFACES.map((s) => [s.id, (picks[s.id] && getMaterial(picks[s.id]!)) || null])) as Record<SurfaceId, Material | null>,
+    [picks],
+  );
 
-  // "Try it in the room" from the sample book lands here.
+  // Fullscreen only where the browser can do it for an element (not iPhone).
+  const canFull = useSyncExternalStore(onFullscreenChange, () => document.fullscreenEnabled, () => false);
+  const full = useSyncExternalStore(onFullscreenChange, () => !!stageEl.current && document.fullscreenElement === stageEl.current, () => false);
+  const toggleFull = () => {
+    if (document.fullscreenElement) void document.exitFullscreen();
+    else void stageEl.current?.requestFullscreen();
+  };
+
   useEffect(() => {
-    const onCompose = (e: Event) => {
-      const { surface, slug } = (e as CustomEvent<{ surface: SurfaceId; slug: string }>).detail;
-      if (!optionsFor(surface).some((m) => m.slug === slug)) return;
-      setTab(surface);
-      setPicks((p) => ({ ...p, [surface]: slug }));
-      const target = document.getElementById("composer");
-      if (!target) return;
-      const lenis = getLenis();
-      if (lenis) lenis.scrollTo(target, { offset: -40, duration: 1.6 });
-      else target.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
-    window.addEventListener("df:compose", onCompose);
-    return () => window.removeEventListener("df:compose", onCompose);
-  }, []);
-
-  // Fit the room into whatever width the stage has.
-  useEffect(() => {
-    const el = stageRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([entry]) => setFit(Math.min(STAGE.maxScale, entry.contentRect.width / STAGE.w, entry.contentRect.height / STAGE.h)));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  // Pointer parallax, eased toward the cursor. The loop only runs while the
-  // room is still moving and stops once it settles, so scrolling past it
-  // costs nothing. Writes the rotation straight to its own element (not via
-  // inherited custom properties), so a frame restyles one node, not the room.
-  useEffect(() => {
-    const stage = stageRef.current;
-    const room = roomRef.current;
-    if (!stage || !room) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
-
-    const frame = () => {
-      x += (tx - x) * 0.09;
-      y += (ty - y) * 0.09;
-      room.style.transform = `rotateX(${(-4 - y * 5).toFixed(3)}deg) rotateY(${(x * 11).toFixed(3)}deg)`;
-      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.002 ? requestAnimationFrame(frame) : 0;
-    };
-    const kick = () => {
-      if (!raf) raf = requestAnimationFrame(frame);
-    };
-    const onMove = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return; // touch drags are for scrolling
-      const r = stage.getBoundingClientRect();
-      tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-      ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
-      kick();
-    };
-    const onLeave = () => {
-      tx = 0;
-      ty = 0;
-      kick();
-    };
-
-    stage.addEventListener("pointermove", onMove);
-    stage.addEventListener("pointerleave", onLeave);
-    return () => {
-      cancelAnimationFrame(raf);
-      stage.removeEventListener("pointermove", onMove);
-      stage.removeEventListener("pointerleave", onLeave);
-    };
-  }, []);
-
-  // Keep the room's proportions true to the dimensions, inside a fixed box.
-  const pxPerM = Math.min(BOX.w / dims.width, BOX.h / dims.height, BOX.d / dims.depth);
-  const W = dims.width * pxPerM;
-  const H = dims.height * pxPerM;
-  const D = dims.depth * pxPerM;
-
-  const chosen = useMemo(() => {
-    const out: Partial<Record<SurfaceId, Material>> = {};
-    for (const s of SURFACES) {
-      const m = picks[s.id] ? getMaterial(picks[s.id]!) : undefined;
-      if (m) out[s.id] = m;
-    }
-    return out;
-  }, [picks]);
+    if (!zoomHint) return;
+    const t = window.setTimeout(() => setZoomHint(false), 1800);
+    return () => window.clearTimeout(t);
+  }, [zoomHint]);
+  const onHover = useCallback((surface: SurfaceId | null, x: number, y: number) => setHover(surface ? { surface, x, y } : null), []);
+  const onView = useCallback((v: View) => setView((cur) => ({ id: v, nonce: cur.nonce })), []);
+  const onZoomHint = useCallback(() => setZoomHint(true), []);
 
   const lines = SURFACES.map((s) => {
     const m = chosen[s.id];
@@ -148,81 +90,107 @@ export function RoomComposer() {
 
   const activeSurface = SURFACES.find((s) => s.id === tab)!;
 
+  // The stage swings round on its own if the camera can't see the surface.
+  const selectTab = useCallback((surface: SurfaceId) => setTab(surface), []);
+
+
+  const label = `3D view of a ${dims.width.toFixed(1)} by ${dims.depth.toFixed(1)} metre room, ${dims.height.toFixed(1)} metres high. ${SURFACES.map(
+    (s) => `${s.label}: ${chosen[s.id] ? `${chosen[s.id]!.name} ${chosen[s.id]!.finish}` : "left as is"}`,
+  ).join(". ")}.`;
+
   return (
     <div className="grid gap-5 lg:grid-cols-[1.35fr_1fr] lg:gap-6">
       {/* ------------------------------------------------------- stage -- */}
       <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-2 lg:h-[620px]" data-reveal>
         <div
-          ref={stageRef}
-          className="relative h-[clamp(320px,56vw,460px)] overflow-hidden lg:h-full rounded-[calc(2rem-0.5rem)] bg-[radial-gradient(120%_90%_at_50%_30%,#2b211c_0%,#120d0b_70%)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)] [perspective:900px]"
-          role="group"
-          aria-label="3D preview of the composed room"
+          ref={stageEl}
+          className="relative h-[clamp(400px,96vw,540px)] overflow-hidden rounded-[calc(2rem-0.5rem)] bg-[radial-gradient(120%_90%_at_50%_35%,#2e241e_0%,#120d0b_72%)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)] lg:h-full [&:fullscreen]:rounded-none"
         >
-          <div className="absolute left-1/2 top-[calc(50%-16px)] [transform-style:preserve-3d]" style={{ transform: `scale(${fit})` }}>
-            <div className="[transform-style:preserve-3d]" style={{ transform: `translateZ(-${D * 0.18}px)` }}>
-            <div ref={roomRef} className="room [transform-style:preserve-3d]" style={{ transform: "rotateX(-4deg)" }}>
-              {/* Back wall: the feature wall. */}
-              <Plane w={W} h={H} transform={`translateZ(${-D / 2}px)`}>
-                <Finish material={chosen.wall} w={W} h={H} pxPerM={pxPerM} fallback="plaster" />
-                <div className="absolute inset-0 bg-[radial-gradient(90%_80%_at_20%_10%,rgba(255,236,210,0.22),transparent_60%),linear-gradient(to_bottom,transparent_70%,rgba(0,0,0,0.35))]" />
-                <Hotspot label="Feature wall" active={tab === "wall"} onClick={() => setTab("wall")} className="left-[62%] top-[30%]" />
-              </Plane>
+          <RoomScene
+            dims={dims}
+            finishes={chosen}
+            mood={mood}
+            view={view.id}
+            viewNonce={view.nonce}
+            focus={tab}
+            label={label}
+            api={scene}
+            onPick={selectTab}
+            onHover={onHover}
+            onHeading={setHeading}
+            onView={onView}
+            onZoomHint={onZoomHint}
+            fallback={<Elevation material={chosen.wall} />}
+            onFallback={() => setFlat(true)}
+          />
 
-              {/* Floor. */}
-              <Plane w={W} h={D} transform={`rotateX(90deg) translateZ(${-H / 2}px)`}>
-                <Finish material={chosen.floor} w={W} h={D} pxPerM={pxPerM} fallback="screed" />
-                <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.5),transparent_45%,rgba(255,230,200,0.08))]" />
-                {/* Rug, for scale. */}
-                <div
-                  className="absolute rounded-[3px] bg-[#d9cbb6]/85 shadow-[0_0_0_6px_rgba(217,203,182,0.25)]"
-                  style={{ left: W / 2 - 1.1 * pxPerM, width: 2.2 * pxPerM, top: 0.95 * pxPerM, height: 1.5 * pxPerM }}
-                />
-                <Hotspot label="Floor" active={tab === "floor"} onClick={() => setTab("floor")} className="left-[22%] top-[72%]" flat />
-              </Plane>
-
-              {/* Ceiling. */}
-              <Plane w={W} h={D} transform={`rotateX(-90deg) translateZ(${-H / 2}px)`}>
-                <Finish material={chosen.ceiling} w={W} h={D} pxPerM={pxPerM} fallback="plaster" />
-                <div className="absolute inset-0 bg-[radial-gradient(50%_40%_at_50%_45%,rgba(255,220,170,0.35),transparent_70%),linear-gradient(to_top,rgba(0,0,0,0.45),transparent_50%)]" />
-                <Hotspot label="Ceiling" active={tab === "ceiling"} onClick={() => setTab("ceiling")} className="left-[70%] top-[40%]" flat />
-              </Plane>
-
-              {/* Side walls, plastered. The left one has a window onto the pines. */}
-              <Plane w={D} h={H} transform={`rotateY(90deg) translateZ(${-W / 2}px)`}>
-                <div className="absolute inset-0 bg-[linear-gradient(90deg,#9b8f80,#d8cfc2_70%,#cfc5b7)]" />
-                <PineWindow pxPerM={pxPerM} D={D} H={H} />
-              </Plane>
-              <Plane w={D} h={H} transform={`rotateY(-90deg) translateZ(${-W / 2}px)`}>
-                <div className="absolute inset-0 bg-[linear-gradient(270deg,#7d7266,#c6bcae_70%,#bfb4a6)]" />
-              </Plane>
-
-              {/* Sofa, standing a little off the feature wall. */}
-              <Plane
-                w={2.1 * pxPerM}
-                h={0.85 * pxPerM}
-                transform={`translate3d(0, ${H / 2 - 0.425 * pxPerM}px, ${-D / 2 + 0.55 * pxPerM}px)`}
-              >
-                <Sofa />
-              </Plane>
-
-              {/* Pendant light. */}
-              <Plane
-                w={0.5 * pxPerM}
-                h={0.9 * pxPerM}
-                transform={`translate3d(0, ${-H / 2 + 0.45 * pxPerM}px, ${-D / 2 + 1.6 * pxPerM}px)`}
-              >
-                <Pendant />
-              </Plane>
+          {/* What the pointer is over, and what it's finished in. */}
+          {hover && (
+            <div
+              className="pointer-events-none absolute z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-white/10 bg-ink/75 px-3 py-1.5 text-[12px] font-semibold text-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.8)] backdrop-blur-md"
+              style={{ left: hover.x, top: hover.y + 22 }}
+              aria-hidden="true"
+            >
+              {SURFACES.find((s) => s.id === hover.surface)!.label}
+              <span className="font-normal text-white/60"> · {chosen[hover.surface]?.finish ?? "As is"}</span>
             </div>
-            </div>
+          )}
+
+          {/* How to zoom, when someone scrolls over the room. */}
+          <div
+            className={`pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ink/80 px-4 py-2 text-[12.5px] font-semibold text-white backdrop-blur-md transition-opacity duration-300 ${zoomHint ? "opacity-100" : "opacity-0"}`}
+            aria-hidden="true"
+          >
+            Pinch, or hold Ctrl and scroll, to zoom
           </div>
 
-          {/* Caption: dimensions, floating over the stage. */}
-          <div className="pointer-events-none absolute inset-x-5 bottom-4 flex items-end justify-between [text-shadow:0_1px_10px_rgba(0,0,0,0.9)] text-[11px] font-semibold uppercase tracking-[0.18em] text-white/55">
-            <span>
-              {dims.width.toFixed(1)} × {dims.depth.toFixed(1)} m · {dims.height.toFixed(1)} m high
-            </span>
-            <span className="hidden sm:inline">Move to look around</span>
+          {/* View and light. */}
+          <div className={`pointer-events-none absolute inset-x-3 top-3 flex items-start justify-between gap-2 ${flat ? "hidden" : ""}`}>
+            <Segmented label="View">
+              {VIEWS.map((v) => (
+                <SegButton key={v.id} pressed={view.id === v.id} onClick={() => setView((cur) => ({ id: v.id, nonce: cur.nonce + 1 }))}>
+                  <span className="sm:hidden">{v.short}</span>
+                  <span className="hidden sm:inline">{v.label}</span>
+                </SegButton>
+              ))}
+            </Segmented>
+            <Segmented label="Light">
+              <SegButton pressed={mood === "day"} onClick={() => setMood("day")} title="Daylight">
+                <SunIcon />
+                <span className="sr-only sm:not-sr-only">Day</span>
+              </SegButton>
+              <SegButton pressed={mood === "evening"} onClick={() => setMood("evening")} title="Evening, lamps on">
+                <MoonIcon />
+                <span className="sr-only sm:not-sr-only">Evening</span>
+              </SegButton>
+            </Segmented>
+          </div>
+
+          {/* Key plan, caption, zoom. */}
+          <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between gap-3">
+            <KeyPlan dims={dims} heading={heading} active={tab} finished={picks} />
+            <p className={`ml-auto hidden text-right text-[11px] font-semibold uppercase leading-relaxed tracking-[0.16em] text-white/45 [text-shadow:0_1px_10px_rgba(0,0,0,0.9)] ${flat ? "" : "pointer-fine:md:block"}`}>
+              Drag to look around · Pinch to zoom
+              <br />
+              Click a surface to change it
+            </p>
+            <div
+              role="group"
+              aria-label="Zoom"
+              className={`pointer-events-auto ml-auto flex flex-col gap-0.5 rounded-full border border-white/10 bg-ink/60 p-1 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.7)] backdrop-blur-md md:ml-0 ${flat ? "hidden" : ""}`}
+            >
+              <IconButton label="Zoom in" onClick={() => scene.current?.zoomBy(0.7)}>
+                <path d="M10 4.5v11M4.5 10h11" />
+              </IconButton>
+              <IconButton label="Zoom out" onClick={() => scene.current?.zoomBy(1 / 0.7)}>
+                <path d="M4.5 10h11" />
+              </IconButton>
+              {canFull && (
+                <IconButton label={full ? "Exit full screen" : "Full screen"} onClick={toggleFull}>
+                  {full ? <path d="M8 3.5V8H3.5M12 3.5V8h4.5M8 16.5V12H3.5M12 16.5V12h4.5" /> : <path d="M3.5 8V3.5H8M16.5 8V3.5H12M3.5 12v4.5H8M16.5 12v4.5H12" />}
+                </IconButton>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -239,13 +207,13 @@ export function RoomComposer() {
                 id={`tab-${s.id}`}
                 aria-selected={tab === s.id}
                 aria-controls="surface-panel"
-                onClick={() => setTab(s.id)}
+                onClick={() => selectTab(s.id)}
                 className={[
                   "rounded-full px-3 py-2 text-[13px] font-semibold pointer-coarse:py-3 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
                   tab === s.id ? "bg-cream text-ink shadow-[0_6px_16px_-8px_rgba(0,0,0,0.6)]" : "text-white/60 hover:text-white",
                 ].join(" ")}
               >
-                {s.label}
+                {s.tab}
               </button>
             ))}
           </div>
@@ -255,7 +223,7 @@ export function RoomComposer() {
               <legend className="flex w-full items-baseline justify-between text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">
                 <span>Finish</span>
                 <span className="normal-case tracking-normal text-white/70">
-                  {chosen[tab] ? `${chosen[tab]!.finish}` : "Leave as is"}
+                  {chosen[tab]?.finish ?? "Leave as is"}
                 </span>
               </legend>
               <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8">
@@ -289,7 +257,8 @@ export function RoomComposer() {
                 </label>
               </div>
               <p className="mt-2.5 text-[12px] text-white/60">
-                {activeSurface.label} · {surfaceArea(tab, dims).toFixed(1)} m²
+                {tab === "wall" ? "Feature wall, window wall and side wall" : activeSurface.label} · {surfaceArea(tab, dims).toFixed(1)} m²
+                {tab === "wall" && ", less the window"}
               </p>
             </fieldset>
           </div>
@@ -310,7 +279,7 @@ export function RoomComposer() {
 
           {/* Estimate. */}
           <div className="border-t border-white/10 pt-4">
-            <ul className="space-y-1 text-[13px]">
+            <ul className="space-y-0.5 text-[12.5px]">
               {lines.map((l) => (
                 <li key={l.surface.id} className="flex items-baseline gap-3">
                   <span className="text-white/50">{l.surface.label}</span>
@@ -356,175 +325,164 @@ export function RoomComposer() {
   );
 }
 
-/* --------------------------------------------------------------- 3D -- */
+/* ------------------------------------------------------------ stage -- */
 
-/** One face of the room, centred on the origin, then moved into place. */
-function Plane({ w, h, transform, children }: { w: number; h: number; transform: string; children: React.ReactNode }) {
+function Segmented({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div
-      className="absolute overflow-hidden [backface-visibility:visible]"
-      style={{ width: w, height: h, left: -w / 2, top: -h / 2, transform }}
+      role="group"
+      aria-label={label}
+      className="pointer-events-auto flex gap-0.5 rounded-full border border-white/10 bg-ink/60 p-1 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.7)] backdrop-blur-md"
     >
       {children}
     </div>
   );
 }
 
-/**
- * Tiles a finish across a surface at real-world scale. When the finish
- * changes, the new one is wiped on over the old like a fresh coat.
- */
-function Finish({
-  material,
-  w,
-  h,
-  pxPerM,
-  fallback,
-}: {
-  material?: Material;
-  w: number;
-  h: number;
-  pxPerM: number;
-  fallback: "plaster" | "screed";
-}) {
-  // Each layer keeps a stable id, so the surviving layer isn't remounted when
-  // the next finish arrives, and the covered one is dropped once paint-on ends.
-  const [layers, setLayers] = useState([{ id: 0, m: material }]);
-  const top = layers[layers.length - 1];
-  if (top.m?.slug !== material?.slug) {
-    // Without the paint-on animation nothing would ever drop the covered layer.
-    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setLayers(calm ? [{ id: top.id + 1, m: material }] : [top, { id: top.id + 1, m: material }]);
-  }
-
-  return (
-    <>
-      {layers.map(({ id, m }, i) => (
-        <div
-          key={id}
-          className={i > 0 ? "paint-on absolute inset-0" : "absolute inset-0"}
-          onAnimationEnd={i > 0 ? () => setLayers((ls) => ls.slice(-1)) : undefined}
-        >
-          {m ? (
-            <Tiles material={m} w={w} h={h} pxPerM={pxPerM} />
-          ) : (
-            <div
-              className={
-                fallback === "plaster"
-                  ? "h-full w-full bg-[linear-gradient(160deg,#e2d9cc,#c9bfb1)]"
-                  : "h-full w-full bg-[linear-gradient(180deg,#6f665c,#8d8378)]"
-              }
-            />
-          )}
-        </div>
-      ))}
-    </>
-  );
-}
-
-function Tiles({ material, w, h, pxPerM }: { material: Material; w: number; h: number; pxPerM: number }) {
-  const [tw, th] = TILE_M[material.surface].map((m) => m * pxPerM);
-  const cols = Math.ceil(w / tw);
-  const rows = Math.ceil(h / th);
-  return (
-    <div className="grid" style={{ gridTemplateColumns: `repeat(${cols}, ${tw}px)`, gridAutoRows: `${th}px` }}>
-      {Array.from({ length: cols * rows }, (_, i) => (
-        <MaterialArt key={i} surface={material.surface} tone={material.tone} className="block h-[calc(100%+1px)] w-[calc(100%+1px)]" />
-      ))}
-    </div>
-  );
-}
-
-function Hotspot({
-  label,
-  active,
-  onClick,
-  className,
-  flat,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  className: string;
-  flat?: boolean;
-}) {
+function SegButton({ pressed, onClick, title, children }: { pressed: boolean; onClick: () => void; title?: string; children: React.ReactNode }) {
   return (
     <button
       type="button"
+      aria-pressed={pressed}
+      title={title}
       onClick={onClick}
-      aria-label={`Edit ${label.toLowerCase()}`}
-      className={`group absolute -ml-2 -mt-2 flex h-11 w-11 items-center justify-center ${className}`}
-      style={flat ? { transform: "rotateX(180deg)" } : undefined}
+      className={[
+        "flex items-center gap-1.5 rounded-full px-2.5 py-1.5 sm:px-3 text-[12px] font-semibold whitespace-nowrap pointer-coarse:py-2.5 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
+        pressed ? "bg-cream text-ink" : "text-white/65 hover:text-white",
+      ].join(" ")}
     >
-      <span className="relative flex h-7 w-7 items-center justify-center">
-        <span className={`absolute inset-0 rounded-full ${active ? "animate-ping bg-ember/60" : "bg-white/0"}`} />
-        <span
-          className={[
-            "relative h-3.5 w-3.5 rounded-full ring-[3px] transition-transform duration-300 group-hover:scale-125",
-            active ? "bg-ember ring-white" : "bg-white ring-ink/40",
-          ].join(" ")}
-        />
-      </span>
+      {children}
     </button>
   );
 }
 
-function PineWindow({ pxPerM, D, H }: { pxPerM: number; D: number; H: number }) {
-  const w = Math.min(1.6 * pxPerM, D * 0.4);
-  const h = Math.min(1.3 * pxPerM, H * 0.45);
+function IconButton({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
   return (
-    <div
-      className="absolute overflow-hidden rounded-[2px] ring-[5px] ring-[#efe8dc]"
-      style={{ width: w, height: h, left: D * 0.38, top: H * 0.24 }}
+    <button
+      type="button"
+      aria-label={label}
+      title={label}
+      onClick={onClick}
+      className="flex h-9 w-9 items-center justify-center rounded-full text-white/75 transition duration-300 hover:bg-white/10 hover:text-white active:scale-90 pointer-coarse:h-11 pointer-coarse:w-11 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
     >
-      <svg viewBox="0 0 160 130" preserveAspectRatio="xMidYMid slice" className="h-full w-full">
-        <defs>
-          <linearGradient id="dusk" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#f3c58f" />
-            <stop offset="60%" stopColor="#e79461" />
-            <stop offset="100%" stopColor="#a8583a" />
-          </linearGradient>
-        </defs>
-        <rect width="160" height="130" fill="url(#dusk)" />
-        {/* Benguet pines on a ridge. */}
-        <path d="M0 110 Q40 92 80 102 T160 96 V130 H0Z" fill="#3a2a22" />
-        {[18, 46, 70, 104, 132].map((x, i) => (
-          <path
-            key={x}
-            d={`M${x} ${60 + (i % 2) * 12} l-10 ${42 - (i % 2) * 10} h20z M${x} ${72 + (i % 2) * 12} l-13 ${34 - (i % 2) * 8} h26z`}
-            fill="#2a1d17"
-          />
-        ))}
-        <rect x="78" width="4" height="130" fill="#efe8dc" />
-        <rect y="62" width="160" height="4" fill="#efe8dc" />
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        {children}
+      </svg>
+    </button>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+      <circle cx="10" cy="10" r="3.5" />
+      <path d="M10 1.5v2M10 16.5v2M1.5 10h2M16.5 10h2M4 4l1.4 1.4M14.6 14.6L16 16M4 16l1.4-1.4M14.6 5.4L16 4" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden="true">
+      <path d="M16.5 12.5A7 7 0 017.5 3.5a7 7 0 109 9z" />
+    </svg>
+  );
+}
+
+/**
+ * Key plan, drawn the way an architect would: walls in plan with the window
+ * opening, the open side as a section line, dimension strings with ticks, and
+ * a cone showing where the camera stands.
+ */
+function KeyPlan({
+  dims,
+  heading,
+  active,
+  finished,
+}: {
+  dims: Dims;
+  heading: number;
+  active: SurfaceId;
+  finished: Record<SurfaceId, string | null>;
+}) {
+  const s = 70 / Math.max(dims.width, dims.depth);
+  const w = dims.width * s;
+  const d = dims.depth * s;
+  const x0 = 10 + (70 - w) / 2;
+  const y0 = 18 + (70 - d) / 2;
+  const win = windowIn(dims);
+  const wy = y0 + (win.centre - win.width / 2) * s;
+  const wh = win.width * s;
+
+  // The camera, out beyond the open side, looking back at the room's centre.
+  const cx = x0 + w / 2;
+  const cy = y0 + d / 2;
+  const r = Math.max(w, d) / 2 + 9;
+  const px = cx + Math.sin(heading) * r;
+  const py = cy + Math.cos(heading) * r;
+  const ray = (spread: number) => {
+    const a = Math.atan2(cx - px, cy - py) + spread;
+    return `${(px + Math.sin(a) * 14).toFixed(1)} ${(py + Math.cos(a) * 14).toFixed(1)}`;
+  };
+
+  const tick = (x: number, y: number) => `M${x - 2} ${y + 2}L${x + 2} ${y - 2}`;
+  const hot = "stroke-ember";
+  // Walls being edited are ember; finished ones solid cream; bare ones faint.
+  const wall = (id: SurfaceId) => ({
+    className: active === id ? hot : finished[id] ? "stroke-cream" : "stroke-white/40",
+    strokeWidth: active === id ? 4 : finished[id] ? 3 : 2,
+  });
+
+  return (
+    <div className="hidden rounded-xl border border-white/10 bg-ink/60 p-1.5 backdrop-blur-md sm:block" aria-hidden="true">
+      <svg viewBox="0 0 110 110" className="block h-[112px] w-[112px]" fill="none">
+        {/* Floor, tinted when it's the surface being edited; the ceiling as a dashed reflected outline. */}
+        <rect x={x0} y={y0} width={w} height={d} className={active === "floor" ? "fill-ember/20" : "fill-white/[0.04]"} />
+        {active === "ceiling" && <rect x={x0 + 3} y={y0 + 3} width={w - 6} height={d - 6} className={hot} strokeWidth="1" strokeDasharray="2.5 2" />}
+
+        {/* Walls: feature wall at the top, window wall on the left; one finish covers all three. */}
+        <path d={`M${x0} ${y0}H${x0 + w}`} {...wall("wall")} />
+        <path d={`M${x0 + w} ${y0}V${y0 + d}`} {...wall("wall")} />
+        <path d={`M${x0} ${y0}V${wy}M${x0} ${wy + wh}V${y0 + d}`} {...wall("wall")} />
+        <path d={`M${x0 - 1.2} ${wy}V${wy + wh}M${x0 + 1.2} ${wy}V${wy + wh}`} className="stroke-white/70" strokeWidth="0.6" />
+        {/* The open side, as a section cut. */}
+        <path d={`M${x0} ${y0 + d}H${x0 + w}`} className="stroke-white/35" strokeWidth="0.8" strokeDasharray="4 2 1 2" />
+
+        {/* Dimension strings. */}
+        <g className="stroke-white/45" strokeWidth="0.6">
+          <path d={`M${x0} ${y0 - 7}H${x0 + w}M${x0} ${y0 - 10}v6M${x0 + w} ${y0 - 10}v6`} />
+          <path d={tick(x0, y0 - 7) + tick(x0 + w, y0 - 7)} strokeWidth="1" />
+          <path d={`M${x0 + w + 7} ${y0}V${y0 + d}M${x0 + w + 4} ${y0}h6M${x0 + w + 4} ${y0 + d}h6`} />
+          <path d={tick(x0 + w + 7, y0) + tick(x0 + w + 7, y0 + d)} strokeWidth="1" />
+        </g>
+        <g className="fill-white/70 font-sans text-[6.5px] font-semibold tabular-nums">
+          <text x={x0 + w / 2} y={y0 - 10} textAnchor="middle">{dims.width.toFixed(1)}</text>
+          <text x={x0 + w + 15} y={y0 + d / 2} textAnchor="middle" transform={`rotate(-90 ${x0 + w + 15} ${y0 + d / 2})`}>
+            {dims.depth.toFixed(1)}
+          </text>
+        </g>
+
+        {/* Camera. */}
+        <path d={`M${px.toFixed(1)} ${py.toFixed(1)}L${ray(-0.3)}L${ray(0.3)}Z`} className="fill-ember/35 stroke-ember" strokeWidth="0.7" strokeLinejoin="round" />
+        <circle cx={px} cy={py} r="1.8" className="fill-ember" />
       </svg>
     </div>
   );
 }
 
-function Sofa() {
+/** Flat elevation of the feature wall, for devices that can't draw the 3D room. */
+function Elevation({ material }: { material: Material | null }) {
   return (
-    <svg viewBox="0 0 210 85" preserveAspectRatio="none" className="h-full w-full drop-shadow-[0_10px_8px_rgba(0,0,0,0.45)]">
-      <rect x="6" y="6" width="198" height="46" rx="12" fill="#3b4238" />
-      <rect x="0" y="34" width="28" height="44" rx="10" fill="#333a31" />
-      <rect x="182" y="34" width="28" height="44" rx="10" fill="#333a31" />
-      <rect x="22" y="44" width="166" height="30" rx="8" fill="#465046" />
-      <line x1="105" y1="46" x2="105" y2="72" stroke="#363e35" strokeWidth="2" />
-      <rect x="20" y="76" width="5" height="9" fill="#1c1410" />
-      <rect x="185" y="76" width="5" height="9" fill="#1c1410" />
-      <rect x="36" y="18" width="34" height="26" rx="7" fill="#c47a4b" />
-    </svg>
-  );
-}
-
-function Pendant() {
-  return (
-    <svg viewBox="0 0 50 90" className="h-full w-full overflow-visible">
-      <line x1="25" y1="0" x2="25" y2="58" stroke="#1c1410" strokeWidth="1" />
-      <circle cx="25" cy="78" r="26" fill="#ffd9a0" opacity="0.18" />
-      <path d="M10 72 Q25 52 40 72 Z" fill="#1c1410" />
-      <ellipse cx="25" cy="72" rx="15" ry="3" fill="#ffe4b8" />
-    </svg>
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-10">
+      <div className="aspect-[16/9] w-full max-w-md overflow-hidden rounded-md shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]">
+        {material ? (
+          <MaterialArt surface={material.surface} tone={material.tone} className="h-full w-full" />
+        ) : (
+          <div className="h-full w-full bg-[linear-gradient(160deg,#e2d9cc,#c9bfb1)]" />
+        )}
+      </div>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Feature wall elevation</p>
+    </div>
   );
 }
 

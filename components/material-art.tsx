@@ -9,14 +9,14 @@ import type { Surface, Tone } from "@/lib/materials";
  * — one gradient ramp per finish, three surface treatments, scalable to any size.
  */
 
-interface Ramp {
+export interface Ramp {
   light: string;
   base: string;
   dark: string;
   deep: string;
 }
 
-const TONES: Record<Tone, Ramp> = {
+export const TONES: Record<Tone, Ramp> = {
   "dust-grey": { light: "#c2bcb5", base: "#a09992", dark: "#7a736c", deep: "#565049" },
   "matte-white": { light: "#fbf9f6", base: "#efeae2", dark: "#d5cec3", deep: "#b3aa9d" },
   ash: { light: "#cfc7bd", base: "#ada49a", dark: "#847b71", deep: "#5e564e" },

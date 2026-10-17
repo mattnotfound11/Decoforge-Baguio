@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Newsreader, Plus_Jakarta_Sans } from "next/font/google";
+import { Instrument_Serif, Plus_Jakarta_Sans } from "next/font/google";
 import { ScrollReveal } from "@/components/scroll-reveal";
 import { IntroLoader } from "@/components/motion/intro-loader";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
@@ -19,14 +19,6 @@ const instrument = Instrument_Serif({
   display: "swap",
   variable: "--font-instrument",
   weight: "400",
-  style: ["normal", "italic"],
-});
-
-/** Book face for the sample book's long-form notes. */
-const newsreader = Newsreader({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-newsreader",
   style: ["normal", "italic"],
 });
 
@@ -60,7 +52,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-PH" suppressHydrationWarning className={`${jakarta.variable} ${instrument.variable} ${newsreader.variable}`}>
+    <html lang="en-PH" suppressHydrationWarning className={`${jakarta.variable} ${instrument.variable}`}>
       <head>
         {/* Decide before first paint whether the intro plays, so it never flashes. If its
             script never finishes, a 9s failsafe lifts the cover and releases scroll. */}

@@ -39,7 +39,6 @@ export const site = {
 export const primaryNav = [
   { label: "Ranges", href: "/#services" },
   { label: "Room composer", href: "/#composer" },
-  { label: "Sample book", href: "/#sample-book" },
   { label: "Projects", href: "/projects" },
   { label: "Catalog", href: "/catalog" },
 ] as const;

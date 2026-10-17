@@ -23,11 +23,7 @@
 
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-instrument), "Iowan Old Style", Georgia, serif;
-  --font-book: var(--font-newsreader), "Iowan Old Style", Georgia, serif;
 
-  /* Sample-book paper. Warmer and yellower than the page cream, like stock. */
-  --color-paper: #f4ead9;
-  --color-graphite: #2b2721;
 
   /* Heavy, spring-like settle used by every reveal and hover in the redesign. */
   --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
@@ -247,10 +243,6 @@
   font-family: var(--font-serif);
   font-weight: 400;
   letter-spacing: -0.02em;
-}
-
-@utility font-book {
-  font-family: var(--font-book);
 }
 
 /* Film grain. Fixed and inert, so it costs one composite layer, not repaints. */
@@ -630,15 +622,6 @@ html[data-intro="play"] .rise { animation-play-state: paused; }
 
 /* ===================================================== room composer ==== */
 
-/* A new finish is rolled on over the old one, left to right. */
-.paint-on {
-  animation: df-paint 1s var(--ease-spring) both;
-}
-@keyframes df-paint {
-  from { clip-path: inset(0 100% 0 0); }
-  to { clip-path: inset(0 0 0 0); }
-}
-
 .range {
   -webkit-appearance: none;
   appearance: none;
@@ -681,125 +664,6 @@ html[data-intro="play"] .rise { animation-play-state: paused; }
 .range:focus-visible { outline: none; }
 .range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--color-ember); }
 .range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--color-ember); }
-
-/* ======================================================= sample book ==== */
-
-.book-spread {
-  perspective: 2400px;
-  /* No filter here: a drop-shadow filter over a subtree that holds the loupe
-     makes the browser re-render the whole book on every scrolled frame. The
-     shadow is a static box-shadow on the cover below instead. */
-}
-.book-spread::before,
-.book-spread::after {
-  content: "";
-  position: absolute;
-  inset: 4px -5px -7px -5px;
-  z-index: -1;
-  border-radius: 6px;
-  background:
-    repeating-linear-gradient(0deg, #e6d9c2 0 1px, #f3e9d6 1px 3px);
-}
-.book-spread::after {
-  inset: 9px -9px -13px -9px;
-  z-index: -2;
-  background: #3a2418; /* the board cover */
-  border-radius: 8px;
-  box-shadow: 0 30px 50px -10px rgb(60 38 18 / 0.32), 0 4px 8px rgb(60 38 18 / 0.18);
-}
-
-.page {
-  background-color: var(--color-paper);
-  background-image:
-    radial-gradient(120% 90% at 50% 0%, rgb(255 255 255 / 0.35), transparent 60%),
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='4'/><feColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.33 0 0 0 0 0.2 0 0 0 0.09 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
-}
-.page--l { border-radius: 6px 0 0 6px; box-shadow: inset -30px 0 40px -30px rgb(80 50 25 / 0.35); }
-.page--r { border-radius: 0 6px 6px 0; box-shadow: inset 30px 0 40px -30px rgb(80 50 25 / 0.35); }
-.page--single { border-bottom: 1px solid rgb(43 39 33 / 0.1); }
-
-/* The bending page (components/home/page-turn.tsx): hinged strips, each
-   showing its own slice of the page, rotated a little more toward the free
-   edge every frame. */
-.pt {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  pointer-events: none;
-}
-.pt-strip {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-/* Each face is widened ~1px into its neighbours (scaleX about its centre), so
-   antialiased strip edges overlap instead of leaving hairline seams. */
-.pt-face {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform: scaleX(1.045);
-}
-.pt-face--back { transform: rotateY(180deg) scaleX(1.045); }
-.pt-content {
-  position: absolute;
-  top: 0;
-  height: 100%;
-}
-.pt-shade {
-  position: absolute;
-  inset: 0;
-  background: #2a190c;
-  opacity: 0;
-}
-/* Shadow cast by the lifted page onto the pages underneath. */
-.pt-cast {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-}
-
-/* Corner that curls up under the cursor. */
-.dog-ear {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 54px;
-  height: 54px;
-  cursor: pointer;
-}
-.dog-ear::before {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 46px;
-  height: 46px;
-  border-radius: 0 0 6px 0;
-  transform-origin: 100% 100%;
-  transform: scale(0);
-  background:
-    linear-gradient(315deg, var(--color-cream) 0 49%, transparent 50%),
-    linear-gradient(135deg, #f6eedf 0 50%, transparent 50%);
-  box-shadow: -4px -4px 10px -4px rgb(60 35 15 / 0.35);
-  transition: transform 0.5s var(--ease-spring);
-}
-.dog-ear:focus-visible::before { transform: scale(0.96); }
-.book:hover .dog-ear::before { transform: scale(0.4); }
-.book .dog-ear:hover::before { transform: none; }
-
-.loupe { transition: opacity 0.4s var(--ease-out-soft); }
-.loupe:focus-visible > span:nth-child(2) { box-shadow: 0 0 0 3px var(--color-rust), 0 22px 40px -14px rgb(40 25 10 / 0.7); }
-
-@media (prefers-reduced-motion: reduce) {
-  .paint-on { animation: none !important; }
-}
 
 /* Catalog rail while a mouse drags it (components/home/rail.tsx): snapping and
    smooth-scroll would fight the pointer, so both are off until it settles. */
